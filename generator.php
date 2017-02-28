@@ -70,7 +70,7 @@ die();
 /**
  * Generates a strong random password.
  * 
- * The characters l, I, O, 1, 0 have been left out, due to being to similar.
+ * The characters l, I, O, 1, 0 have been left out, due to being too similar.
  * 
  * @param number $length - The length of the resulting password.
  * @param string $add_dashes - Useful to generate serial number looking passwords.

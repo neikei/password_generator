@@ -1,0 +1,100 @@
+/*
+	Password Generator
+
+	Supports generating passwords of unlimited length and selectable complexity.
+
+	@author nrekow
+	
+*/
+@CHARSET "UTF-8";
+
+* {
+	font-family: sans;
+	font-size: 9pt;
+}
+
+html, body {
+	margin: 0 auto;
+}
+
+label {
+	font-size:9pt;
+}
+
+input[type=checkbox], label {
+	cursor:pointer;
+}
+
+input[type=checkbox] {
+	position: relative;
+	top:3px;
+}
+
+td {
+	padding-right:24px;
+}
+
+.alignLeft {
+	text-align:left;
+}
+.alignRight {
+	text-align:right;
+}
+
+#left, #right {
+	width: 50%;
+}
+
+#left {
+	float:left;
+}
+
+#right {
+	float:right;
+}
+
+#length {
+	width:24px;
+	text-align:right;
+}
+
+#custom {
+	width:75%;
+}
+
+#box {
+	position:absolute;
+	top:50%;
+	left:50%;
+	width:500px;
+	height:227px;
+	margin-left:-250px;
+	margin-top:-100px;
+	background-color:#eee;
+	border:1px solid #ccc;
+	padding:8px;
+	text-align:left;
+}
+
+#label {
+	font-size:8pt;
+	color:#ccc;
+	float:left;
+}
+
+#label > a {
+	color:#ccc;
+	text-decoration:none;
+}
+
+#label > strong {
+	font-weight:bold;
+}
+
+#result {
+	width:95%;
+	height:32px;
+	padding:4px;
+	font-size:12pt;
+	text-align:center;
+}

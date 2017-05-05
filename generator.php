@@ -35,6 +35,11 @@ if (isset($_POST['symbols']) && !empty($_POST['symbols'])) {
 	$available_sets .= 's';
 }
 
+// Similar chars
+if (isset($_POST['similar']) && !empty($_POST['similar'])) {
+	$available_sets .= 'x';
+}
+
 // Length
 if (isset($_POST['length']) && !empty($_POST['length']) && is_numeric($_POST['length'])) {
 	$length = $_POST['length'];
@@ -68,6 +73,7 @@ $lowercase = 'abcdefghijkmnopqrstuvwxyz';
 $uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 $decimals  = '23456789';
 $symbols   = '!@#$%&*?;:-+/()={[]}';
+$similar   = 'lIO10';
 
 $allSetChars = array($lowercase, $uppercase, $decimals, $symbols);
 
@@ -91,6 +97,11 @@ if (strpos($available_sets, 'd') !== false) {
 // Use symbols
 if (strpos($available_sets, 's') !== false) {
 	$sets[] = $symbols;
+}
+
+// Use similar chars
+if (strpos($available_sets, 'x') !== false) {
+	$sets[] = $similar;
 }
 
 // Add all characters from chosen sets

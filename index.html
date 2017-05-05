@@ -26,15 +26,16 @@
 				<input type="text" id="result" name="result" value="" placeholder="Enter a password to check or click Generate" onfocus="this.select();"/>
 				<br/>
 				<table>
-					<tr title="The characters l, I, O, 1, 0 have been left out, due to being too similar.">
+					<tr title="By default the characters l, I, O, 1, 0 will be left out, due to being too similar.">
 						<td><input type="checkbox" id="lowercase" name="lowercase" checked/> <label for="lowercase">Lowercase</label></td>
 						<td><input type="checkbox" id="uppercase" name="uppercase" checked/> <label for="uppercase">Uppercase</label></td>
 						<td><input type="checkbox" id="numbers" name="numbers" checked/> <label for="numbers">Numbers</label></td>
 						<td><input type="checkbox" id="symbols" name="symbols"/> <label for="symbols">Symbols</label></td>
 					</tr>
 					<tr>
-						<td colspan="2" title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" name="dashes"/> <label for="dashes">Add dashes</label></td>
-						<td colspan="2"><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">All options are mandatory</label></td>
+						<td title="Include the similar characters l, I, O, 1 and 0."><input type="checkbox" id="similar" name="similar"/> <label for="similar">Include similar chars</label></td>
+						<td title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" name="dashes"/> <label for="dashes">Add dashes</label></td>
+						<td title="This makes sure that the password contains at least one character of each selected set." colspan="2"><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">All options are mandatory</label></td>
 					</tr>
 				</table>
 				<br/> 

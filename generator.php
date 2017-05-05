@@ -127,10 +127,8 @@ if (!empty(($custom))) {
 }
 
 
-// Add JSON header just in case JQuery messes things up if it's missing. Normally not required if dataType is set to 'json' in AJAX call.
-header('Content-Type: application/json');
-
-// Check which action to perform.
+// Check which action to perform and prepare JSON.
+$json = '';
 if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($_POST['result']) && !empty($_POST['result'])) {
 	// Use posted string as password.
 	$password = $_POST['result'];
@@ -144,14 +142,18 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$strength = checkPasswordStrength($password, $allSetChars);
 	
 	// Return a JSON formatted array which contains the password and its strength.
-	print json_encode(array('password' => $password, 'strength' => $strength));
+	$json = json_encode(array('password' => $password, 'strength' => $strength));
 } else {
 	if (!isset($_POST['checkstrength']) || empty($_POST['checkstrength'])) {
 		// Return the generated password and its strength as JSON 
-		print generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
+		$json = generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
 	}
 }
 
+// Add JSON header just in case JQuery messes things up if it's missing. Normally not required if dataType is set to 'json' in AJAX call.
+header('Content-Type: application/json');
+// Return JSON
+echo $json;
 // Always die after an AJAX call.
 die();
 

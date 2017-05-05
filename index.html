@@ -11,73 +11,53 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link type="image/x-icon" rel="shortcut icon" href="img/favicon.ico"/>
 		<link type="text/css" rel="stylesheet" href="css/reset.css"/>
 		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<title>Password Generator</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script src="js/ajax.js"></script>
+		<title>Password generator</title>
 	</head>
 	<body>
-		<div id="box">
+		<div id="box" title="Password generator">
 			<form id="generator" action="#" method="post">
-				<input type="text" id="result" value="" readonly onfocus="this.select();"/>
+				<input type="text" id="result" name="result" value="" placeholder="Enter a password to check or click Generate" onfocus="this.select();"/>
 				<br/>
 				<table>
-					<tr>
-						<td><input type="checkbox" id="lowercase" name="lowercase"/> <label for="lowercase">Lowercase</label></td>
+					<tr title="The characters l, I, O, 1, 0 have been left out, due to being too similar.">
+						<td><input type="checkbox" id="lowercase" name="lowercase" checked/> <label for="lowercase">Lowercase</label></td>
 						<td><input type="checkbox" id="uppercase" name="uppercase" checked/> <label for="uppercase">Uppercase</label></td>
 						<td><input type="checkbox" id="numbers" name="numbers" checked/> <label for="numbers">Numbers</label></td>
 						<td><input type="checkbox" id="symbols" name="symbols"/> <label for="symbols">Symbols</label></td>
 					</tr>
 					<tr>
-						<td colspan="2"><input type="checkbox" id="dashes" name="dashes" checked/> <label for="dashes">Add dashes</label></td>
-						<td colspan="2"><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">Other characters are mandatory</label></td>
+						<td colspan="2" title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" name="dashes"/> <label for="dashes">Add dashes</label></td>
+						<td colspan="2"><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">All options are mandatory</label></td>
 					</tr>
 				</table>
 				<br/> 
 				<div id="left">
-					<label for="length">Length</label> <input type="text" id="length" name="length" value="20" maxlength="3" placeholder="10"/> <label for="length">characters</label>
+					<label for="length">Length</label> <input type="text" id="length" name="length" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
 				</div>
 				<div id="right">
+					<label for="strength">Strength</label> 
+					<div id="strength-meter">
+						<div id="strength-weak" class="strength hidden" title="weak"></div>
+						<div id="strength-fair" class="strength hidden" title="fair"></div>
+						<div id="strength-good" class="strength hidden" title="good"></div>
+					</div>
 				</div>
 				<br style="clear:both;"/>
 				<br/>
 				<label for="custom">Other characters</label> <input type="text" id="custom" name="custom" value="" placeholder="Optionally enter other characters"/>
 				<br/>
 				<br/>
-				<div id="label" class="alignLeft">
-					<strong>Password Generator</strong><br/>
-					<a href="http://www.das-schoene-system.de" target="_blank">www.das-schoene-system.de</a>
-				</div>
 				<div class="alignRight">
-					<button type="button" id="generate">Generate</button> <button type="reset">Reset</button>
+					<button type="button" id="generate">Generate</button> <button type="button" id="checkstrength">Check strength</button> <button type="reset" id="reset">Reset</button>
 				</div>
 			</form>
 		</div>
-		<script type="text/javascript">
-			$(function() {
-				$('#generate').click(function() {
-					if ($('#mandatory').is(':checked') && $('#custom').val() == '') {
-						$('#mandatory').prop('checked', false);
-					}
-					
-					if ($('#length').val() <= 0 || $('#length').val() == '') {
-						$('#length').val(10);
-					}
-					
-					var data = $('#generator').serialize();
-					$.ajax({
-						type: 'post',
-						url: 'generator.php',
-						data: 'ajax=1&' + data,
-						success: function(result) {
-							$('#result').val(result);
-						},
-						error: function(xhr, status) {
-							console.log('AJAX call failed with status ' + status);
-						}
-					});
-				});
-			});
-		</script>
 	</body>
 </html>

@@ -8,17 +8,13 @@
 */
 @CHARSET "UTF-8";
 
-* {
-	font-family: sans;
+html, body, * {
+	font-family: "Verdana", sans-serif;
 	font-size: 9pt;
 }
 
 html, body {
 	margin: 0 auto;
-}
-
-label {
-	font-size:9pt;
 }
 
 input[type=checkbox], label {
@@ -29,6 +25,22 @@ input[type=checkbox] {
 	position: relative;
 	top:3px;
 }
+
+input[type=text], textarea, button {
+	border-radius:4px;
+	border:1px solid #ccc;
+}
+
+button {
+	background-color:default;
+	cursor:pointer;
+	padding:4px;
+}
+
+button:hover {
+	background-color:#fff;
+}
+
 
 td {
 	padding-right:24px;
@@ -41,6 +53,10 @@ td {
 	text-align:right;
 }
 
+.hidden {
+	display:none;
+}
+
 #left, #right {
 	width: 50%;
 }
@@ -51,6 +67,9 @@ td {
 
 #right {
 	float:right;
+	position:relative;
+	left:4px;
+	top:2px;
 }
 
 #length {
@@ -58,41 +77,69 @@ td {
 	text-align:right;
 }
 
-#custom {
-	width:75%;
+#strength-meter {
+	display:inline-block;
+	position:relative;
+	top:1px;
+	left:7px;
+	width: 186px;
+	height: 6px;
+	padding:1px 2px;
+	border:1px solid #ccc;
+	border-radius: 4px;
 }
 
+.strength {
+	height: 6px;
+	position:absolute;
+	top:1px;
+	left:2px;
+}
+
+#strength-weak {
+	width: 62px;
+	background-color: #f00;
+	border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+}
+
+#strength-fair {
+	width: 124px;
+	background-color: #ff0;
+	border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+}
+
+#strength-good {
+	width: 186px;
+	background-color: #0f0;
+	border-radius: 4px;
+}
+
+
+#custom {
+	width:77%;
+}
+
+/*
 #box {
 	position:absolute;
 	top:50%;
 	left:50%;
-	width:500px;
-	height:227px;
 	margin-left:-250px;
 	margin-top:-100px;
+	width:500px;
+	height:196px;
 	background-color:#eee;
 	border:1px solid #ccc;
+	border-radius:4px;
 	padding:8px;
 	text-align:left;
 }
-
-#label {
-	font-size:8pt;
-	color:#ccc;
-	float:left;
-}
-
-#label > a {
-	color:#ccc;
-	text-decoration:none;
-}
-
-#label > strong {
-	font-weight:bold;
-}
+*/
 
 #result {
-	width:95%;
+	width:98%;
 	height:32px;
 	padding:4px;
 	font-size:12pt;

@@ -10,12 +10,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link type="image/x-icon" rel="shortcut icon" href="img/favicon.ico"/>
 		<link type="text/css" rel="stylesheet" href="css/reset.css"/>
 		<link type="text/css" rel="stylesheet" href="css/style.css"/>
-		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="js/ajax.js"></script>
 		<title>Password generator</title>
@@ -25,19 +27,17 @@
 			<form id="generator" action="#" method="post">
 				<input type="text" id="result" name="result" value="" placeholder="Enter a password to check or click Generate" onfocus="this.select();"/>
 				<br/>
-				<table>
-					<tr title="By default the characters l, I, O, 1, 0 will be left out, due to being too similar.">
-						<td><input type="checkbox" id="lowercase" name="lowercase" checked/> <label for="lowercase">Lowercase</label></td>
-						<td><input type="checkbox" id="uppercase" name="uppercase" checked/> <label for="uppercase">Uppercase</label></td>
-						<td><input type="checkbox" id="numbers" name="numbers" checked/> <label for="numbers">Numbers</label></td>
-						<td><input type="checkbox" id="symbols" name="symbols"/> <label for="symbols">Symbols</label></td>
-					</tr>
-					<tr>
-						<td title="Include the similar characters l, I, O, 1 and 0."><input type="checkbox" id="similar" name="similar"/> <label for="similar">Include similar chars</label></td>
-						<td title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" name="dashes"/> <label for="dashes">Add dashes</label></td>
-						<td title="This makes sure that the password contains at least one character of each selected set." colspan="2"><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">All options are mandatory</label></td>
-					</tr>
-				</table>
+				<ul class="inlinelist" title="By default the characters l, I, O, 1, 0 will be left out, due to being too similar.">
+					<li><input type="checkbox" id="lowercase" name="lowercase" checked/> <label for="lowercase">Lowercase</label></li>
+					<li><input type="checkbox" id="uppercase" name="uppercase" checked/> <label for="uppercase">Uppercase</label></li>
+					<li><input type="checkbox" id="numbers" name="numbers" checked/> <label for="numbers">Numbers</label></li>
+					<li><input type="checkbox" id="symbols" name="symbols"/> <label for="symbols">Symbols</label></li>
+				</ul>
+				<ul class="inlinelist">
+					<li title="Include the similar characters l, I, O, 1 and 0."><input type="checkbox" id="similar" name="similar"/> <label for="similar">Include similar chars</label></li>
+					<li title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" name="dashes"/> <label for="dashes">Add dashes</label></li>
+					<li title="This makes sure that the password contains at least one character of each selected set."><input type="checkbox" id="mandatory" name="mandatory"/> <label for="mandatory">All options are mandatory</label></li>
+				</ul>
 				<br/> 
 				<div id="left">
 					<label for="length">Length</label> <input type="text" id="length" name="length" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>

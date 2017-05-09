@@ -19,6 +19,7 @@ $(function() {
 		$('.strength').hide();
 	});
 	
+	/*
 	$('#box').dialog({
 		autoOpen: true,
 		modal: true,
@@ -32,6 +33,7 @@ $(function() {
 		},
 		width: 560
 	});
+	*/
 });
 
 function doAJAX(s) {

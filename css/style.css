@@ -18,43 +18,38 @@ html, body {
 }
 
 input[type=checkbox], label {
-	cursor:pointer;
+	cursor: pointer;
 }
 
 input[type=checkbox] {
 	position: relative;
-	top:3px;
+	top: 2px;
 }
 
 input[type=text], textarea, button {
-	border-radius:4px;
-	border:1px solid #ccc;
+	border-radius: 4px;
+	border: 1px solid #ccc;
 }
 
 button {
-	background-color:default;
-	cursor:pointer;
-	padding:4px;
+	background-color: default;
+	cursor: pointer;
+	padding: 4px;
 }
 
 button:hover {
-	background-color:#fff;
-}
-
-
-td {
-	padding-right:24px;
+	background-color: #fff;
 }
 
 .alignLeft {
-	text-align:left;
+	text-align: left;
 }
 .alignRight {
-	text-align:right;
+	text-align: right;
 }
 
 .hidden {
-	display:none;
+	display: none;
 }
 
 #left, #right {
@@ -62,86 +57,130 @@ td {
 }
 
 #left {
-	float:left;
+	float: left;
 }
 
 #right {
-	float:right;
-	position:relative;
-	left:4px;
-	top:2px;
+	float: right;
+	position :relative;
+	left: 4px;
+	top: 2px;
 }
 
 #length {
-	width:24px;
-	text-align:right;
+	width: 24px;
+	text-align: right;
 }
 
 #strength-meter {
-	display:inline-block;
-	position:relative;
-	top:1px;
-	left:7px;
-	width: 186px;
+	display: inline-block;
+	position: relative;
+	top: 1px;
 	height: 6px;
-	padding:1px 2px;
-	border:1px solid #ccc;
+	padding: 1px 2px;
+	border: 1px solid #ccc;
 	border-radius: 4px;
 }
 
 .strength {
 	height: 6px;
-	position:absolute;
-	top:1px;
-	left:2px;
+	position: absolute;
+	top: 1px;
+	left: 2px;
 }
 
 #strength-weak {
-	width: 62px;
+	width: 33%;
 	background-color: #f00;
 	border-bottom-left-radius: 4px;
 	border-top-left-radius: 4px;
 }
 
 #strength-fair {
-	width: 124px;
+	width: 66%;
 	background-color: #ff0;
 	border-bottom-left-radius: 4px;
 	border-top-left-radius: 4px;
 }
 
 #strength-good {
-	width: 186px;
+	width: 99%;
 	background-color: #0f0;
 	border-radius: 4px;
 }
 
 
 #custom {
-	width:77%;
+	width: 77%;
 }
 
-/*
-#box {
-	position:absolute;
-	top:50%;
-	left:50%;
-	margin-left:-250px;
-	margin-top:-100px;
-	width:500px;
-	height:196px;
-	background-color:#eee;
-	border:1px solid #ccc;
-	border-radius:4px;
-	padding:8px;
-	text-align:left;
+ul.inlinelist {
+	display: table;
+	padding: 0;
+	width: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
-*/
+
+ul.inlinelist li {
+	display: table-cell;
+}
+
+
+#box {
+	/* center vertically */
+	position: absolute;
+	top: 50%;
+	margin-top: -100px;
+
+	background-color: #eee;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	text-align: left;
+	height: auto;
+}
+
+
+@media (max-width: 595px) { 
+	#box {
+		left: 0;
+		margin-left: 0;
+		width: auto;
+		padding: 8px;
+	}
+	
+	#strength-meter {
+		left: 0;
+		width: auto;
+		min-width: 140px;
+	}
+	
+	ul.inlinelist, ul.inlinelist li {
+		display: block;
+	}
+}
+
+
+@media (min-width: 596px) {
+	#box {
+		left: 50%;
+		margin-left: -290px;
+		width: 560px;
+		padding: 8px;
+	}
+	
+	#strength-meter {
+		left: 7px;
+		width: 186px;
+	}
+}
+
 
 #result {
-	width:98%;
-	height:32px;
-	padding:4px;
-	font-size:12pt;
-	text-align:center;
+	width: 98%;
+	height: 32px;
+	padding: 4px;
+	font-size: 12pt;
+	text-align: center;
 }

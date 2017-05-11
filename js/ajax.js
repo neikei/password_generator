@@ -19,25 +19,18 @@ $(function() {
 		$('.strength').hide();
 	});
 	
-	/*
-	$('#box').dialog({
-		autoOpen: true,
-		modal: true,
-		resizable: false,
-		open: function(event, ui) {
-			$(".ui-dialog-titlebar-close").hide();
-		},
-		closeOnEscape: false,
-		beforeClose: function() {
-			return false;
-		},
-		width: 560
+	$(window).resize(function () {
+	    $("#box").position({
+	        my: "center", at: "center", of: window
+	    });
 	});
-	*/
+
+	$('#box').draggable({
+		containment: 'window'
+	});
 });
 
 function doAJAX(s) {
-	
 	if (typeof(s) == 'undefined') {
 		s = '';
 	} else {

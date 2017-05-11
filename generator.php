@@ -181,7 +181,7 @@ die();
  * @param Boolean $mandatory - Flag to toggle chosen sets mandatory.
  * @return String (JSON)
  */
-function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $allSetChars = '', /*$available_sets = 'luds', $custom = '',*/ $mandatory = false) {
+function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $allSetChars = '', $mandatory = false) {
 	// Shuffle the order of sets for additional randomness.
 	shuffle($sets);
 	

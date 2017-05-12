@@ -9,10 +9,13 @@
  * 
  */
 
+// Die if request doesn't identify as AJAX request.
 if (!isset($_POST['ajax']) || empty($_POST['ajax'])) {
 	die('Missing parameter');
 }
 
+
+// This will hold the requested sets of characters.
 $available_sets = '';
 
 // Lowercase
@@ -68,6 +71,7 @@ if (isset($_POST['mandatory']) && !empty($_POST['mandatory'])) {
 	$mandatory = false;
 }
 
+// Define the characters of our sets.
 $sets = array();
 $lowercase = 'abcdefghijkmnopqrstuvwxyz';
 $uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';

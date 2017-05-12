@@ -8,6 +8,7 @@
 */
 @CHARSET "UTF-8";
 
+/* Some global definitions which make it look nice. */
 html, body, * {
 	font-family: "Verdana", sans-serif;
 	font-size: 9pt;
@@ -41,17 +42,18 @@ button:hover {
 	background-color: #fff;
 }
 
+/* Useful generic classes*/
 .alignLeft {
 	text-align: left;
 }
 .alignRight {
 	text-align: right;
 }
-
 .hidden {
 	display: none;
 }
 
+/* Theses DIVs are used to properly position the length form field and the strength-meter. */
 #left, #right {
 	width: 50%;
 }
@@ -67,11 +69,14 @@ button:hover {
 	top: 2px;
 }
 
+/* Input form field for our password length */
 #length {
 	width: 24px;
 	text-align: right;
 }
 
+
+/* Our strength-meter */
 #strength-meter {
 	display: inline-block;
 	position: relative;
@@ -82,6 +87,7 @@ button:hover {
 	border-radius: 4px;
 }
 
+/* Start position and height of all bars of the strength-meter */
 .strength {
 	height: 6px;
 	position: absolute;
@@ -89,6 +95,8 @@ button:hover {
 	left: 2px;
 }
 
+
+/* Weak bar is red and occupies just 33% width of the strength-meter */
 #strength-weak {
 	width: 33%;
 	background-color: #f00;
@@ -96,6 +104,8 @@ button:hover {
 	border-top-left-radius: 4px;
 }
 
+
+/* Fair bar is yellow and occupies 66% width of the strength-meter */
 #strength-fair {
 	width: 66%;
 	background-color: #ff0;
@@ -103,6 +113,9 @@ button:hover {
 	border-top-left-radius: 4px;
 }
 
+
+/* Good bar is green and occupies all width of the strength-bar. Mind the missing 1%, which leaves some space at the right end.
+   Otherwise it would touch the surrounding border (not good). */
 #strength-good {
 	width: 99%;
 	background-color: #0f0;
@@ -110,10 +123,13 @@ button:hover {
 }
 
 
+/* Width of the input form field where custom characters can be entered */
 #custom {
 	width: 77%;
 }
 
+
+/* A list gives us more flexibility than a table, so we put all options in a list, which is formatted as a table. */
 ul.inlinelist {
 	display: table;
 	padding: 0;
@@ -123,11 +139,13 @@ ul.inlinelist {
     -webkit-box-sizing: border-box;
 }
 
+/* Each entry in our list should behave like a table cell */
 ul.inlinelist li {
 	display: table-cell;
 }
 
 
+/* Our box where all the stuff happens */
 #box {
 	/* center vertically */
 	position: absolute;
@@ -142,6 +160,16 @@ ul.inlinelist li {
 }
 
 
+/* Input form field which will hold the generated password */
+#result {
+	width: 98%;
+	height: 32px;
+	padding: 4px;
+	font-size: 12pt;
+	text-align: center;
+}
+
+/* Add some responsiveness */
 @media (max-width: 595px) { 
 	#box {
 		left: 0;
@@ -174,13 +202,4 @@ ul.inlinelist li {
 		left: 7px;
 		width: 186px;
 	}
-}
-
-
-#result {
-	width: 98%;
-	height: 32px;
-	padding: 4px;
-	font-size: 12pt;
-	text-align: center;
 }

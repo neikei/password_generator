@@ -42,7 +42,13 @@
 				</ul>
 				<br/> 
 				<div id="left">
-					<label for="length">Length</label> <input type="text" id="length" name="length" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
+					<label for="length">Length</label> <input type="text" id="length" name="length" list="length-select" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
+					<datalist id="length-select">
+						<option>6</option>
+						<option>8</option>
+						<option>12</option>
+						<option>18</option>
+					</datalist>
 				</div>
 				<div id="right">
 					<label for="strength">Strength</label> 

@@ -33,7 +33,6 @@ input[type=text], textarea, button {
 }
 
 button {
-	background-color: default;
 	cursor: pointer;
 	padding: 4px;
 }
@@ -73,8 +72,9 @@ button:hover {
 #length {
 	width: 24px;
 	text-align: right;
+	background:url('../img/arrow_down.png') no-repeat 32px center;
+	padding-right:20px;
 }
-
 
 /* Our strength-meter */
 #strength-meter {

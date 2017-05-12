@@ -72,7 +72,7 @@ button:hover {
 #length {
 	width: 24px;
 	text-align: right;
-	background:url('../img/arrow_down.png') no-repeat 32px center;
+	background: #fff url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAUCAMAAACzvE1FAAAADFBMVEUzMzMzMzMzMzMzMzMKAG/3AAAAA3RSTlMAf4C/aSLHAAAAPElEQVR42q3NMQ4AIAgEQTn//2cLdRKppSGzBYwzVXvznNWs8C58CiussPJj8h6NwgorrKRdTvuV9v16Afn0AYFOB7aYAAAAAElFTkSuQmCC") no-repeat scroll right 4px center / 8px 10px;
 	padding-right:20px;
 }
 

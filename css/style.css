@@ -34,7 +34,7 @@ input[type=text], textarea, button {
 
 button {
 	cursor: pointer;
-	padding: 4px;
+	padding: 4px 8px;
 	text-shadow: 1px 1px 0 #ccc;
 	box-shadow:2px 2px 2px #ddd;
 	border:1px solid #dadada;

@@ -149,6 +149,10 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$password = $_POST['result'];
 	
 	// Remove all chars from posted string which are not in the globally defined sets.
+	// Add similar chars to set if requested.
+	if (isset($_POST['similar']) && !empty($_POST['similar'])) {
+		$allSetChars[] = $similar;
+	}
 	$chars = implode('', $allSetChars);
 	$pattern = '/[^' . preg_quote($chars, '/') . ']/';
 	$password = preg_replace($pattern, '', $password);
@@ -286,6 +290,7 @@ function checkPasswordStrength($password, $allSetChars) {
 	$ret = 'weak';
 	$length = strlen($password);
 	
+	// Clear temporary array
 	$tmp = array();
 	for ($i = 0; $i < count($allSetChars); $i++) {
 		$tmp[$i] = 0;

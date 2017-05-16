@@ -25,15 +25,19 @@ $(function() {
 	
 	// Center the box if the browser window is resized.
 	$(window).resize(function () {
-	    $("#box").position({
+	    $("#outer_box").position({
 	        my: "center", at: "center", of: window
 	    });
 	});
 
 	// Configure the box to be draggable inside the browser window, but don't allow to move it out of the viewport.
-	$('#box').draggable({
-		containment: 'window'
+	$('#outer_box').draggable({
+		containment: 'window',
+		handle: '#title',
+		cancel: '#box'
 	});
+	
+	$('#title').disableSelection();
 });
 
 function doAJAX(s) {

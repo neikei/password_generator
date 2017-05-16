@@ -148,12 +148,10 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	// Use posted string as password.
 	$password = $_POST['result'];
 	
+	// Add similar chars to set
+	$chars = implode('', $allSetChars) . $similar;
+
 	// Remove all chars from posted string which are not in the globally defined sets.
-	// Add similar chars to set if requested.
-	if (isset($_POST['similar']) && !empty($_POST['similar'])) {
-		$allSetChars[] = $similar;
-	}
-	$chars = implode('', $allSetChars);
 	$pattern = '/[^' . preg_quote($chars, '/') . ']/';
 	$password = preg_replace($pattern, '', $password);
 	

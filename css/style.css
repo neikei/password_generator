@@ -38,6 +38,7 @@ input[type=text], textarea, button {
 	border: 1px solid #ccc;
 }
 
+/* Make buttons look nice */
 button {
 	cursor: pointer;
 	padding: 4px 8px;
@@ -168,8 +169,7 @@ ul.inlinelist li {
 	display: table-cell;
 }
 
-
-/* Our box where all the stuff happens */
+/* This contains the title bar and the actual box */
 #outer_box {
 	/* center vertically */
 	position: absolute;
@@ -180,6 +180,7 @@ ul.inlinelist li {
 	height: auto;
 }
 
+/* The orange title bar of our box */
 #title {
 	position:relative;
 	top:0;
@@ -198,6 +199,7 @@ ul.inlinelist li {
 	box-shadow: 4px 4px 10px #ddd;
 }
 
+/* Our box where all the stuff happens */
 #box {
 	background-color: #eee;
 	border: 1px solid #ccc;
@@ -208,6 +210,7 @@ ul.inlinelist li {
 	padding: 8px 12px 16px 8px;
 }
 
+/* This is to position the options properly to the #result form field */
 #options {
 	position:relative;
 	left:4px;
@@ -258,7 +261,10 @@ ul.inlinelist li {
 }
 
 
-
+/*
+   This makes checkboxes look nice. It's a little tricky, though.
+   Basically we hide the checkbox and misuse its label to draw a checkbox with a togglable checkmark.
+*/
 .regular-checkbox {
 	display: none;
 }

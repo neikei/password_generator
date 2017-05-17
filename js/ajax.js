@@ -27,20 +27,30 @@ $(function() {
 	
 	// Center the box if the browser window is resized.
 	$(window).resize(function () {
-	    $("#outer_box").position({
-	        my: "center", at: "center", of: window
-	    });
+		centerBox();
 	});
 
 	// Configure the box to be draggable inside the browser window, but don't allow to move it out of the viewport.
 	$('#outer_box').draggable({
-		containment: 'window',
+		containment: '#box',
 		handle: '#title',
-		cancel: '#box'
+		cancel: '#inner_box'
 	});
 	
+	// Disable text-selection of title-bar, because this is used as drag-handle
 	$('#title').disableSelection();
+	
+	// Center box upon load
+	centerBox();
 });
+
+
+function centerBox() {
+    $("#outer_box").position({
+        my: "center", at: "center", of: window
+    });
+}// END: centerBox();
+
 
 function doAJAX(s) {
 	// Check if a parameter has been specified and prepare for POST; fallback to an empty string.

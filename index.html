@@ -36,55 +36,57 @@
 		<title>Password Generator</title>
 	</head>
 	<body>
-		<div id="outer_box">
-			<div id="title">Password Generator</div>
-			<div id="box">
-				<form id="generator" action="#" method="post">
-					<input type="text" id="result" name="result" value="" placeholder="Enter a password to check or click Generate" onfocus="this.select();"/>
-					<br/>
-					<div id="options">
-						<ul class="inlinelist" title="By default the characters l, I, O, 1, 0 will be left out, due to being too similar.">
-							<li><input type="checkbox" id="lowercase" class="regular-checkbox" name="lowercase" checked/><label for="lowercase"></label> <label for="lowercase">Lowercase</label></li>
-							<li><input type="checkbox" id="uppercase" class="regular-checkbox" name="uppercase" checked/><label for="uppercase"></label> <label for="uppercase">Uppercase</label></li>
-							<li><input type="checkbox" id="numbers" class="regular-checkbox" name="numbers" checked/><label for="numbers"></label> <label for="numbers">Numbers</label></li>
-							<li><input type="checkbox" id="symbols" class="regular-checkbox" name="symbols"/><label for="symbols"></label> <label for="symbols">Symbols</label></li>
-						</ul>
-						<ul class="inlinelist">
-							<li title="Include the similar characters l, I, O, 1 and 0."><input type="checkbox" id="similar" class="regular-checkbox" name="similar"/><label for="similar"></label> <label for="similar">Include similar chars</label></li>
-							<li title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" class="regular-checkbox" name="dashes"/><label for="dashes"></label> <label for="dashes">Add dashes</label></li>
-							<li title="This makes sure that the password contains at least one character of each selected set."><input type="checkbox" id="mandatory" class="regular-checkbox" name="mandatory"/><label for="mandatory"></label> <label for="mandatory">All options are mandatory</label></li>
-						</ul>
-						<br/> 
-						<div id="left">
-							<label for="length">Length</label> <input type="text" id="length" name="length" list="length-select" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
-							<datalist id="length-select">
-								<option>6</option>
-								<option>8</option>
-								<option>10</option>
-								<option>12</option>
-								<option>14</option>
-								<option>16</option>
-								<option>18</option>
-							</datalist>
-						</div>
-						<div id="right">
-							<label for="strength">Strength</label> 
-							<div id="strength-meter">
-								<div id="strength-weak" class="strength hidden" title="weak"></div>
-								<div id="strength-fair" class="strength hidden" title="fair"></div>
-								<div id="strength-good" class="strength hidden" title="good"></div>
+		<div id="box">
+			<div id="outer_box">
+				<div id="title">Password Generator</div>
+				<div id="inner_box">
+					<form id="generator" action="#" method="post">
+						<input type="text" id="result" name="result" value="" placeholder="Enter a password to check or click Generate" onfocus="this.select();"/>
+						<br/>
+						<div id="options">
+							<ul class="inlinelist" title="By default the characters l, I, O, 1, 0 will be left out, due to being too similar.">
+								<li><input type="checkbox" id="lowercase" class="regular-checkbox" name="lowercase" checked/><label for="lowercase"></label> <label for="lowercase">Lowercase</label></li>
+								<li><input type="checkbox" id="uppercase" class="regular-checkbox" name="uppercase" checked/><label for="uppercase"></label> <label for="uppercase">Uppercase</label></li>
+								<li><input type="checkbox" id="numbers" class="regular-checkbox" name="numbers" checked/><label for="numbers"></label> <label for="numbers">Numbers</label></li>
+								<li><input type="checkbox" id="symbols" class="regular-checkbox" name="symbols"/><label for="symbols"></label> <label for="symbols">Symbols</label></li>
+							</ul>
+							<ul class="inlinelist">
+								<li title="Include the similar characters l, I, O, 1 and 0."><input type="checkbox" id="similar" class="regular-checkbox" name="similar"/><label for="similar"></label> <label for="similar">Include similar chars</label></li>
+								<li title="Will make the password a few characters longer than defined."><input type="checkbox" id="dashes" class="regular-checkbox" name="dashes"/><label for="dashes"></label> <label for="dashes">Add dashes</label></li>
+								<li title="This makes sure that the password contains at least one character of each selected set."><input type="checkbox" id="mandatory" class="regular-checkbox" name="mandatory"/><label for="mandatory"></label> <label for="mandatory">All options are mandatory</label></li>
+							</ul>
+							<br/> 
+							<div id="left">
+								<label for="length">Length</label> <input type="text" id="length" name="length" list="length-select" value="6" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
+								<datalist id="length-select">
+									<option>6</option>
+									<option>8</option>
+									<option>10</option>
+									<option>12</option>
+									<option>14</option>
+									<option>16</option>
+									<option>18</option>
+								</datalist>
+							</div>
+							<div id="right">
+								<label for="strength">Strength</label> 
+								<div id="strength-meter">
+									<div id="strength-weak" class="strength hidden" title="weak"></div>
+									<div id="strength-fair" class="strength hidden" title="fair"></div>
+									<div id="strength-good" class="strength hidden" title="good"></div>
+								</div>
+							</div>
+							<br style="clear:both;"/>
+							<br/>
+							<label for="custom">Other characters</label> <input type="text" id="custom" name="custom" value="" placeholder="Optionally enter other characters"/>
+							<br/>
+							<br/>
+							<div class="alignRight">
+								<button type="button" id="generate"><span class="glyphicon glyphicon-refresh"></span> Generate</button> <button type="button" id="checkstrength"><span class="glyphicon glyphicon-signal"></span> Check strength</button> <button type="reset" id="reset"><span class="glyphicon glyphicon-remove"></span> Reset</button>
 							</div>
 						</div>
-						<br style="clear:both;"/>
-						<br/>
-						<label for="custom">Other characters</label> <input type="text" id="custom" name="custom" value="" placeholder="Optionally enter other characters"/>
-						<br/>
-						<br/>
-						<div class="alignRight">
-							<button type="button" id="generate"><span class="glyphicon glyphicon-refresh"></span> Generate</button> <button type="button" id="checkstrength"><span class="glyphicon glyphicon-signal"></span> Check strength</button> <button type="reset" id="reset"><span class="glyphicon glyphicon-remove"></span> Reset</button>
-						</div>
-					</div>
-				</form>
+					</form>
+				</div>
 			</div>
 		</div>
 	</body>

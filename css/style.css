@@ -46,6 +46,7 @@ input[type=text], textarea, button {
 button {
 	cursor: pointer;
 	padding: 4px 8px;
+	margin-top:4px;
 	text-shadow: 1px 1px 0 #ccc;
 	border:1px solid #dadada;
 	background-color:#f7f7f7;
@@ -173,21 +174,31 @@ ul.inlinelist li {
 	display: table-cell;
 }
 
+#box {
+	position:fixed;
+	width:100%;
+	height:100%;
+}
+
 /* This contains the title bar and the actual box */
 #outer_box {
 	/* center vertically */
 	position: absolute;
+	
+	/* Does NOT work with JQueryUI's draggable elements. We use ugly JavaScript instead. */
+	/*
 	top: 50%;
 	margin-top: -150px;
+	*/
 
 	text-align: left;
 	height: auto;
 	
-	/* Put this behind the #title, because the #title needs to be behind #box in order to have no overlapping shadows. */
+	/* Put this behind the #title, because the #title needs to be behind #inner_box in order to have no overlapping shadows. */
 	z-index:-2;
 }
 
-#title, #box {
+#title, #inner_box {
 	box-shadow: 4px 4px 10px #555 /* #ddd */;
 }
 
@@ -208,12 +219,12 @@ ul.inlinelist li {
 	color:#444;
 	text-shadow: 1px 1px 2px #ffb600;
 	
-	/* Put this behind #box to have no overlapping shadows. */
+	/* Put this behind #inner_box to have no overlapping shadows. */
 	z-index:-1;
 }
 
 /* Our box where all the stuff happens */
-#box {
+#inner_box {
 	background-color: #eee;
 	border: 1px solid #ccc;
 	border-top-right-radius: 4px;
@@ -261,8 +272,12 @@ ul.inlinelist li {
 @media (min-width: 596px) {
 	#outer_box {
 		/* center horizontally */
+		
+		/* Does NOT work with JQueryUI's draggable elements. We use ugly JavaScript instead. */
+		/*
 		left: 50%;
 		margin-left: -280px;
+		*/
 		width: 560px;
 	}
 	

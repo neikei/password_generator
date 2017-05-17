@@ -76,8 +76,11 @@ $sets = array();
 $lowercase = 'abcdefghijkmnopqrstuvwxyz';
 $uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 $decimals  = '23456789';
-$symbols   = '!@#$%&*?;:-+/()={[]}';
-$similar   = 'lIO10';
+$symbols   = '!"^°@#$%&*?;:.,_-+/\()=<{[]}>';
+$similar_uppercase = 'IO';
+$similar_lowercase = 'l';
+$similar_decimals = '10';
+$similar = $similar_uppercase . $similar_lowercase . $similar_decimals;
 
 $allSetChars = array($lowercase, $uppercase, $decimals, $symbols);
 
@@ -85,17 +88,29 @@ $available_sets = strtolower($available_sets); // Check sets as lowercase.
 
 // Use lowercase characters
 if (strpos($available_sets, 'l') !== false) {
-	$sets[] = $lowercase;
+	if (strpos($available_sets, 'x') !== false) {
+		$sets[] = $lowercase . $similar_lowercase;
+	} else {
+		$sets[] = $lowercase;
+	}
 }
 
 // Use uppercase characters
 if (strpos($available_sets, 'u') !== false) {
-	$sets[] = $uppercase;
+	if (strpos($available_sets, 'x') !== false) {
+		$sets[] = $uppercase . $similar_uppercase;
+	} else {
+		$sets[] = $uppercase;
+	}
 }
 
 // Use decimals
 if (strpos($available_sets, 'd') !== false) {
-	$sets[] = $decimals;
+	if (strpos($available_sets, 'x') !== false) {
+		$sets[] = $decimals . $similar_decimals;
+	} else {
+		$sets[] = $decimals;
+	}
 }
 
 // Use symbols
@@ -104,9 +119,11 @@ if (strpos($available_sets, 's') !== false) {
 }
 
 // Use similar chars
+/*
 if (strpos($available_sets, 'x') !== false) {
 	$sets[] = $similar;
 }
+*/
 
 // Add all characters from chosen sets
 $allChars = implode('', $sets);
@@ -162,8 +179,11 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$json = json_encode(array('password' => $password, 'strength' => $strength));
 } else {
 	if (!isset($_POST['checkstrength']) || empty($_POST['checkstrength'])) {
-		// Return the generated password and its strength as JSON 
-		$json = generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
+		// Return the generated password and its strength as JSON
+		// Circumvent duplicate AJAX calls due to hammering the "Generate" button. 
+		do {
+			$json = generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
+		} while (empty($json));
 	}
 }
 
@@ -285,6 +305,7 @@ function hasMandatoryChars($password, $sets, $ret, $tolerance = 0) {
  * @return string
  */
 function checkPasswordStrength($password, $allSetChars) {
+	// Everything is considered a weak password unless it fit the definition below.
 	$ret = 'weak';
 	$length = strlen($password);
 	
@@ -301,9 +322,12 @@ function checkPasswordStrength($password, $allSetChars) {
 		// Check if password is at least 6 chars long and contains at least one char of three of all sets. Tolerance is 1.
 		if ($length >= 6 && hasMandatoryChars($password, $allSetChars, $tmp, 1)) {
 			$ret = 'fair';
+		} else {
+			// If there's no password, then there's no strength, too.
+			if ($length <= 0) {
+				$ret = '';
+			}
 		}
-		
-		// Everything else is considered a weak password as defined at the top of this function.
 	}
 	
 	return $ret;

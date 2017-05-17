@@ -9,6 +9,8 @@
 $(function() {
 	// Handle clicks on the Generate button
 	$('#generate').click(function() {
+		// Disable the button to avoid hammering.
+		$('#generate').prop('disabled', true);
 		doAJAX();
 	});
 	
@@ -62,16 +64,21 @@ function doAJAX(s) {
 		url: 'generator.php',
 		data: 'ajax=1&' + data + s,
 		dataType: 'json',
+
+		// Re-enable the button after the AJAX call has been completed.
+		complete: function() {
+			$('#generate').prop('disabled', false);
+		},
 		
 		// On success write generated password string into our #result form field
 		success: function(result) {
 			$('#result').val(result.password);
-			
-			// Check if our AJAX call also returned a strength ... 
+
+			// Hide strength (e.g. red, yellow, green bars) ...
+			$('.strength').hide();
+
+			// ... check if our AJAX call also returned a strength ... 
 			if (typeof(result.strength) != 'undefined' && result.strength.length > 0) {
-				// ... hide everything (e.g. red, yellow, green bars) ...
-				$('.strength').hide();
-				
 				// ... and just show the one returned by the AJAX call.
 				$('#strength-' + result.strength).show();
 			}

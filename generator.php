@@ -7,6 +7,8 @@
  * 
  * @author nrekow
  * 
+ * TODO: FIX: Checking strength of Ge:K$1!d0 returns a "medium" strength only, because the "1" and the "0" is not considered a decimal.
+ *            If we change the number to e.g. 2 then the strength-meter shows "high".
  */
 
 // Die if request doesn't identify as AJAX request.
@@ -80,9 +82,12 @@ $symbols   = '!"^°@#$%&*?;:.,_-+/\()=<{[]}>';
 $similar_uppercase = 'IO';
 $similar_lowercase = 'l';
 $similar_decimals = '10';
-$similar = $similar_uppercase . $similar_lowercase . $similar_decimals;
 
-$allSetChars = array($lowercase, $uppercase, $decimals, $symbols);
+// This contains all character-groups. For readability indexes have been added, although they would be created automatically.
+$allSetChars = array(0 => $lowercase . $similar_lowercase,
+					 1 => $uppercase . $similar_uppercase,
+					 2 => $decimals . $similar_decimals,
+					 3 => $symbols);
 
 $available_sets = strtolower($available_sets); // Check sets as lowercase.
 
@@ -166,12 +171,12 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$password = $_POST['result'];
 	
 	// Add similar chars to set
-	$chars = implode('', $allSetChars) . $similar;
+	$chars = implode('', $allSetChars);// . $similar;
 
 	// Remove all chars from posted string which are not in the globally defined sets.
 	$pattern = '/[^' . preg_quote($chars, '/') . ']/';
 	$password = preg_replace($pattern, '', $password);
-	
+
 	// Check strength of entered password
 	$strength = checkPasswordStrength($password, $allSetChars);
 	

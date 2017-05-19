@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * 
  * Password Generator
@@ -6,14 +6,14 @@
  * Supports generating passwords of unlimited length and selectable complexity.
  * 
  * @author nrekow
+ *
+ * TODO: FIX: Issues with UTF-8 encoding. Sometimes a ° is shown as Â and vice versa. Sometimes even both occurs.
  * 
- * TODO: FIX: Checking strength of Ge:K$1!d0 returns a "medium" strength only, because the "1" and the "0" is not considered a decimal.
- *            If we change the number to e.g. 2 then the strength-meter shows "high".
  */
 
 // Die if request doesn't identify as AJAX request.
 if (!isset($_POST['ajax']) || empty($_POST['ajax'])) {
-	die('Missing parameter');
+	die('Missing parameter!');
 }
 
 
@@ -61,7 +61,7 @@ if (isset($_POST['dashes']) && !empty($_POST['dashes'])) {
 
 // Custom characters
 if (isset($_POST['custom']) && !empty($_POST['custom'])) {
-	$custom = htmlspecialchars($_POST['custom'], ENT_QUOTES);
+	$custom = $_POST['custom'];
 } else {
 	$custom = '';
 }
@@ -78,16 +78,19 @@ $sets = array();
 $lowercase = 'abcdefghijkmnopqrstuvwxyz';
 $uppercase = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 $decimals  = '23456789';
-$symbols   = '!"^�@#$%&*?;:.,_-+/\()=<{[]}>';
+$symbols   = '!"^°@#$%&*?;:.,\'~_-+/\\()=<{[]}>';
 $similar_uppercase = 'IO';
 $similar_lowercase = 'l';
 $similar_decimals = '10';
+$similar_symbols = '|';
 
 // This contains all character-groups. For readability indexes have been added, although they would be created automatically.
-$allSetChars = array(0 => $lowercase . $similar_lowercase,
-					 1 => $uppercase . $similar_uppercase,
-					 2 => $decimals . $similar_decimals,
-					 3 => $symbols);
+$allSetChars = array(
+		0 => $lowercase . $similar_lowercase,
+		1 => $uppercase . $similar_uppercase,
+		2 => $decimals  . $similar_decimals,
+		3 => $symbols   . $similar_symbols
+);
 
 $available_sets = strtolower($available_sets); // Check sets as lowercase.
 
@@ -120,62 +123,40 @@ if (strpos($available_sets, 'd') !== false) {
 
 // Use symbols
 if (strpos($available_sets, 's') !== false) {
-	$sets[] = $symbols;
+	if (strpos($available_sets, 'x') !== false) {
+		$sets[] = $symbols . $similar_symbols;
+	} else {
+		$sets[] = $symbols;
+	}
 }
 
-// Use similar chars
-/*
-if (strpos($available_sets, 'x') !== false) {
-	$sets[] = $similar;
-}
-*/
 
 // Add all characters from chosen sets
 $allChars = implode('', $sets);
 
 // Add custom chars if they are not covered by chosen sets
 if (!empty(($custom))) {
-	// Check and add custom chars to chosen sets
-	$tmpCustom = '';
-	$customArray = str_split($custom);
-	foreach ($customArray as $c) {
-		if (strpos($allChars, $c) === false) {
-			$tmpCustom .= $c;
-		}
-	}
+	// Add to chosen sets
+	$tmpCustom = addCustomChars($custom, $sets);
+	$tmpCustom ? $sets[] = $tmpCustom : null;
 	
-	if (!empty($tmpCustom)) {
-		$sets[] = $tmpCustom;
-	}
-	
-	// Check and add custom chars to global sets
-	$tmpCustom = '';
-	$customArray= str_split($custom);
-	$allSetCharsString = implode('', $allSetChars);
-	foreach ($customArray as $c) {
-		if (strpos($allSetCharsString, $c) === false) {
-			$tmpCustom .= $c;
-		}
-	}
-	
-	if (!empty($tmpCustom)) {
-		$allSetChars[] = $tmpCustom;
-	}
+	// Add to all chars sets
+	$tmpCustom = addCustomChars($custom, $allChars);
+	$tmpCustom ? $allSetChars[] = $tmpCustom : null;
 }
 
 
 // Check which action to perform and prepare JSON.
 $json = '';
+$password = '';
+$ret = '';
+
 if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($_POST['result']) && !empty($_POST['result'])) {
 	// Use posted string as password.
 	$password = $_POST['result'];
 	
-	// Add similar chars to set
-	$chars = implode('', $allSetChars);// . $similar;
-
 	// Remove all chars from posted string which are not in the globally defined sets.
-	$pattern = '/[^' . preg_quote($chars, '/') . ']/';
-	$password = preg_replace($pattern, '', $password);
+	$password = cleanupString($password, $allSetChars); //= preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $password );
 
 	// Check strength of entered password
 	$strength = checkPasswordStrength($password, $allSetChars);
@@ -187,17 +168,110 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 		// Return the generated password and its strength as JSON
 		// Circumvent duplicate AJAX calls due to hammering the "Generate" button. 
 		do {
-			$json = generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
-		} while (empty($json));
+			$ret= generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
+		} while (empty($ret));
+		
+		$json = json_encode($ret, JSON_UNESCAPED_UNICODE);
 	}
 }
 
 // Add JSON header just in case JQuery messes things up if it's missing. Normally not required if dataType is set to 'json' in AJAX call.
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=UTF-8');
 // Return JSON
 echo $json;
 // Always die after an AJAX call.
 die();
+
+
+
+function cleanupString($s, $allSetChars) {
+	return preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $s );
+}// END: cleanupString()
+
+
+/**
+ * Generate a password with a defined length out of sets of chars.
+ *
+ * @param integer $length
+ * @param array $allChars
+ * @return string
+ */
+function makePassword($length, $allChars, $n) {
+	$tmpPassword = '';
+	
+	// Add random character from chosen sets to password
+	for ($i = 0; $i < $length; $i++) {
+		// Bad, because array_rand() has very strange randomness.
+		//$tmpPassword .= $allChars[array_rand($allChars)];
+		
+		if (!function_exists('random_int')) {
+			// Better, because the randomness of the Mersenne Twister Random Number Generator is much more random,
+			// but mt_rand() is cryptografically insecure. Anyway, this supports PHP 5.
+			$tmpPassword .= $allChars[mt_rand(0, $n - 1)];
+		} else {
+			// If you're on PHP 7 just use this, because random_int() is cryptografically secure and does the same job here.
+			$tmpPassword .= $allChars[random_int(0, $n - 1)];
+		}
+	}
+	
+	return $tmpPassword;
+}// END: makePassword()
+
+
+/**
+ * Split-up a string by inserting dashes.
+ *
+ * @param string $password
+ * @param integer $length
+ * @return string
+ */
+function addDashes($password, $length) {
+	$dash_len = floor(sqrt($length));
+	$dash_str = '';
+	
+	// Split password into equally sized blocks separated by dashes.
+	while (strlen($password) > $dash_len) {
+		$dash_str .= substr($password, 0, $dash_len) . '-';
+		$password = substr($password, $dash_len);
+	}
+	
+	$password = $dash_str . $password;
+	
+	return $password;
+}// END: addDashes()
+
+
+/**
+ * Checks for custom chars and adds them to the chosen set.
+ *
+ * @param string $custom
+ * @param string|array $sets
+ * @return string|boolean
+ */
+function addCustomChars($custom, $sets) {
+	$tmpCustom = '';
+	
+	// Convert array to string
+	if (is_array($sets)) {
+		$sets= implode('', $sets);
+	}
+	
+	// Split string into array
+	$customArray = str_split($custom);
+	
+	// Walk through the array and add every char which is not already in our sets
+	foreach ($customArray as $c) {
+		if (strpos($sets, $c) === false) {
+			$tmpCustom .= $c;
+		}
+	}
+	
+	// Check if our temporary string is empty and set it to false (hail to no type safety!) ...
+	empty($tmpCustom) ? $tmpCustom = false : null;
+	
+	// ... otherwise simply return our temporary string.
+	return $tmpCustom;
+}// END: addCustomChars()
 
 
 /**
@@ -205,12 +279,12 @@ die();
  * 
  * The characters l, I, O, 1, 0 have been left out, due to being too similar.
  * 
- * @param Integer $length - The length of the resulting password.
- * @param String $add_dashes - Useful to generate serial number looking passwords.
- * @param String $available_sets - The sets to use. l = lower case, u = upper case, d = decimals and s = symbols.
- * @param String $custom - Collection of user-entered characters. Will be added to the sets unless the sets already contain them.
- * @param Boolean $mandatory - Flag to toggle chosen sets mandatory.
- * @return String (JSON)
+ * @param integer $length - The length of the resulting password.
+ * @param string $add_dashes - Useful to generate serial number looking passwords.
+ * @param string $available_sets - The sets to use. l = lower case, u = upper case, d = decimals and s = symbols.
+ * @param string $custom - Collection of user-entered characters. Will be added to the sets unless the sets already contain them.
+ * @param boolean $mandatory - Flag to toggle chosen sets mandatory.
+ * @return array
  */
 function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $allSetChars = '', $mandatory = false) {
 	// Shuffle the order of sets for additional randomness.
@@ -218,7 +292,10 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	
 	// Add all characters from chosen sets.
 	$allChars = implode('', $sets);
-
+	
+	// Convert $allChars from UTF-8 to ISO, because we select just one byte per round when generating the password. UTF-8 is two bytes long.
+	$allChars = iconv("UTF-8", "ISO-8859-1//IGNORE", $allChars);
+	
 	// Split string into an array which contains one character per entry.
 	$allChars = str_split($allChars);
 	
@@ -227,51 +304,43 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	for ($i = 0; $i < count($sets); $i++) {
 		$ret[$i] = 0;
 	}
-	
-	if ($mandatory) {
-		do {
-			$password = '';
-			for ($i = 0; $i < $length; $i++) {
-				$password .= $allChars[array_rand($allChars)];	// Add random character from chosen sets to password
-			}
-		} while(!hasMandatoryChars($password, $sets, $ret));
-	} else {
-		$password = '';
-		for ($i = 0; $i < $length; $i++) {
-			$password .= $allChars[array_rand($allChars)];		// Add random character from chosen sets to password
-		}
-	}
-	
-	$password = str_shuffle($password);							// Shuffle the generated password for additional randomness.
 
+	$password = ''; // Clear $password, just to be save.
+	$n = count($allChars); // Faster to store it, than to request it again for each loop.
+	
+	// Check if chosen char sets are mandatory and generate a random password.
+	// This is executed just once if $mandatory == false,
+	// and executed multiple times if $mandatory == true
+	// and the password is missing mandatory chars.
+	do {
+		$password = makePassword($length, $allChars, $n);
+	} while ($mandatory && !hasMandatoryChars($password, $sets, $ret));
+
+	// Shuffle the generated password for additional randomness.
+	$password = str_shuffle($password);
+	
 	// Add dashes if requested
 	if ($add_dashes) {
-		$dash_len = floor(sqrt($length));
-		$dash_str = '';
-		
-		// Split password into equally sized blocks separated by dashes.
-		while (strlen($password) > $dash_len) {
-			$dash_str .= substr($password, 0, $dash_len) . '-';
-			$password = substr($password, $dash_len);
-		}
-		
-		$password = $dash_str . $password;
+		$password = addDashes($password, $length);
 	}
 
 	// Check the password strength.
 	$strength = checkPasswordStrength($password, $allSetChars);
+
+	// Convert $password back to UTF-8, because json_encode() expects UTF-8
+	$password = iconv('ISO-8859-1', 'UTF-8', $password);
 	
-	// Return a JSON formatted array which contains the password and its strength.
-	return json_encode(array('password' => $password, 'strength' => $strength));
+	// Return array which contains the password and its strength.
+	return array('password' => $password, 'strength' => $strength);
 }// END: generateStrongPassword()
 
 
 /**
  * Checks if a given password contains at least one character of each set.
  * 
- * @param String $password
- * @param Array $sets
- * @param Array $ret
+ * @param string $password
+ * @param array $sets
+ * @param array $ret
  * @return boolean
  */
 function hasMandatoryChars($password, $sets, $ret, $tolerance = 0) {
@@ -305,8 +374,8 @@ function hasMandatoryChars($password, $sets, $ret, $tolerance = 0) {
  * Checks strength of a given password against all defined sets.
  * Returns a string that describes the strength of the password, in order to use that as id by the associated JavaScript.
  * 
- * @param String $password
- * @param Array $allSetChars
+ * @param string $password
+ * @param array $allSetChars
  * @return string
  */
 function checkPasswordStrength($password, $allSetChars) {
@@ -320,8 +389,8 @@ function checkPasswordStrength($password, $allSetChars) {
 		$tmp[$i] = 0;
 	}
 	
-	// Check if password is at least 8 chars long and contains at least one char of each set. No tolerance here!
-	if ($length >= 8 && hasMandatoryChars($password, $allSetChars, $tmp)) {
+	// Check if password is at least 9 chars long and contains at least one char of each set. No tolerance here!
+	if ($length >= 9 && hasMandatoryChars($password, $allSetChars, $tmp)) {
 		$ret = 'good';
 	} else {
 		// Check if password is at least 6 chars long and contains at least one char of three of all sets. Tolerance is 1.

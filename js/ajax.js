@@ -1,4 +1,4 @@
-/*
+﻿/*
 	Password Generator
 
 	Supports generating passwords of unlimited length and selectable complexity.

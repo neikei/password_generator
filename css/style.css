@@ -1,4 +1,4 @@
-/*
+﻿/*
 	Password Generator
 
 	Supports generating passwords of unlimited length and selectable complexity.
@@ -63,6 +63,13 @@ button:active {
 	left: 1px;
 	top: 1px;
 	box-shadow: 1px 1px 1px #ddd;
+}
+
+button[disabled], button:active[disabled] {
+	cursor: wait;
+	background-color:#f7f7f7;
+	color: #ccc;
+	box-shadow: 0 0 0 transparent;
 }
 
 label {

@@ -7,7 +7,6 @@
  * 
  * @author nrekow
  *
- * TODO: FIX: Issues with UTF-8 encoding. Sometimes a ° is shown as Â and vice versa. Sometimes even both occurs.
  * 
  */
 
@@ -198,19 +197,24 @@ function cleanupString($s, $allSetChars) {
  */
 function makePassword($length, $allChars, $n) {
 	$tmpPassword = '';
+	$use_random_int = false;
+	
+	if (function_exists('random_int')) {
+		$use_random_int = true;
+	}
 	
 	// Add random character from chosen sets to password
 	for ($i = 0; $i < $length; $i++) {
-		// Bad, because array_rand() has very strange randomness.
+		// Don't use array_rand(). It has a very strange randomness.
 		//$tmpPassword .= $allChars[array_rand($allChars)];
 		
-		if (!function_exists('random_int')) {
-			// Better, because the randomness of the Mersenne Twister Random Number Generator is much more random,
-			// but mt_rand() is cryptografically insecure. Anyway, this supports PHP 5.
-			$tmpPassword .= $allChars[mt_rand(0, $n - 1)];
-		} else {
-			// If you're on PHP 7 just use this, because random_int() is cryptografically secure and does the same job here.
+		if ($use_random_int) {
+			// If you're on PHP 7 use this, because random_int() is cryptografically secure and does the same as mt_rand().
 			$tmpPassword .= $allChars[random_int(0, $n - 1)];
+		} else {
+			// If you're still on PHP 5 use the Mersenne Twister Random Number Generator instead.
+			// It's much better than array_rand(), but keep in mind that it's cryptografically insecure.
+			$tmpPassword .= $allChars[mt_rand(0, $n - 1)];
 		}
 	}
 	
@@ -299,12 +303,6 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	// Split string into an array which contains one character per entry.
 	$allChars = str_split($allChars);
 	
-	// Prepare results array (one entry per set)
-	$ret = array();
-	for ($i = 0; $i < count($sets); $i++) {
-		$ret[$i] = 0;
-	}
-
 	$password = ''; // Clear $password, just to be save.
 	$n = count($allChars); // Faster to store it, than to request it again for each loop.
 	
@@ -312,10 +310,31 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	// This is executed just once if $mandatory == false,
 	// and executed multiple times if $mandatory == true
 	// and the password is missing mandatory chars.
-	do {
-		$password = makePassword($length, $allChars, $n);
-	} while ($mandatory && !hasMandatoryChars($password, $sets, $ret));
+	if ($mandatory) {
+		// Try to generate a password which fits all requirements as set by the user.
+		$trycount = 0;
+		do {
+			$password = makePassword($length, $allChars, $n);
+			$trycount++;
+		} while ($trycount < 100 && !hasMandatoryChars($password, $sets));
+		
+		// Fallback. If we didn't get a password which contains all mandatory strings, we add one char of each set manually.
+		if (!hasMandatoryChars($password, $sets)) {
+			$tmpPassword = '';
+			foreach ($sets as $set) {
+				$set = iconv('UTF-8', 'ISO-8859-1//IGNORE', $set);
+				$tmpPassword .= $set[mt_rand(0, strlen($set) -1)]; // Use strlen() instead of count() here, because it's a string and not an array.
+			}
 
+			// Cut off the length of the temporary password, which we want to add, so the resulting length of the password stays the same. 
+			$password = substr($password, 0, strlen($password) - strlen($tmpPassword)) . $tmpPassword;
+		}
+	} else {
+		// Simply generate a password
+		$password = makePassword($length, $allChars, $n);
+	}
+		
+		
 	// Shuffle the generated password for additional randomness.
 	$password = str_shuffle($password);
 	
@@ -324,11 +343,11 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 		$password = addDashes($password, $length);
 	}
 
+	// Convert $password back to UTF-8, because json_encode() expects UTF-8. Also the strength check would fail otherwise. 
+	$password = iconv('ISO-8859-1', 'UTF-8', $password);
+
 	// Check the password strength.
 	$strength = checkPasswordStrength($password, $allSetChars);
-
-	// Convert $password back to UTF-8, because json_encode() expects UTF-8
-	$password = iconv('ISO-8859-1', 'UTF-8', $password);
 	
 	// Return array which contains the password and its strength.
 	return array('password' => $password, 'strength' => $strength);
@@ -343,11 +362,20 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
  * @param array $ret
  * @return boolean
  */
-function hasMandatoryChars($password, $sets, $ret, $tolerance = 0) {
+function hasMandatoryChars($password, $sets, $tolerance = 0) {
+	// Clear our check-array.
+	$ret = array();
+	for ($i = 0; $i < count($sets); $i++) {
+		$ret[$i] = 0;
+	}
+	
 	// Check if each char of each set is at least one time in password.
 	foreach ($sets as $key => $value) {
-		for ($i = 0; $i < strlen($value); $i++) {
-			if (strpos($password, $value[$i]) !== false) {
+		$len = strlen($value);
+		for ($i = 0; $i < $len; $i++) {
+			//$val = iconv('ISO-8859-1', 'UTF-8', $value[$i]);
+			$val = $value[$i];
+			if (strpos($password, $val) !== false) {
 				$ret[$key] = 1;
 			}
 		}
@@ -390,11 +418,11 @@ function checkPasswordStrength($password, $allSetChars) {
 	}
 	
 	// Check if password is at least 9 chars long and contains at least one char of each set. No tolerance here!
-	if ($length >= 9 && hasMandatoryChars($password, $allSetChars, $tmp)) {
+	if ($length >= 9 && hasMandatoryChars($password, $allSetChars)) {
 		$ret = 'good';
 	} else {
 		// Check if password is at least 6 chars long and contains at least one char of three of all sets. Tolerance is 1.
-		if ($length >= 6 && hasMandatoryChars($password, $allSetChars, $tmp, 1)) {
+		if ($length >= 6 && hasMandatoryChars($password, $allSetChars, 1)) {
 			$ret = 'fair';
 		} else {
 			// If there's no password, then there's no strength, too.

@@ -155,7 +155,7 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$password = $_POST['result'];
 	
 	// Remove all chars from posted string which are not in the globally defined sets.
-	$password = cleanupString($password, $allSetChars); //= preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $password );
+	//$password = cleanupString($password, $allSetChars); //= preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $password );
 
 	// Check strength of entered password
 	$strength = checkPasswordStrength($password, $allSetChars);

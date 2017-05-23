@@ -133,15 +133,14 @@ if (strpos($available_sets, 's') !== false) {
 // Add all characters from chosen sets
 $allChars = implode('', $sets);
 
-// Add custom chars if they are not covered by chosen sets
+// Use custom chars and add them if they are not covered by the chosen/available sets
 if (!empty(($custom))) {
-	// Add to chosen sets
 	$tmpCustom = addCustomChars($custom, $sets);
-	$tmpCustom ? $sets[] = $tmpCustom : null;
-	
-	// Add to all chars sets
-	$tmpCustom = addCustomChars($custom, $allChars);
-	$tmpCustom ? $allSetChars[] = $tmpCustom : null;
+
+	if ($tmpCustom) {
+		$sets[] = $tmpCustom;			// Add custom chars only to chosen sets
+		$allSetChars[] = $tmpCustom;	// Add custom chars to all chars sets
+	}
 }
 
 
@@ -306,34 +305,20 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	$password = ''; // Clear $password, just to be save.
 	$n = count($allChars); // Faster to store it, than to request it again for each loop.
 	
-	// Check if chosen char sets are mandatory and generate a random password.
-	// This is executed just once if $mandatory == false,
-	// and executed multiple times if $mandatory == true
-	// and the password is missing mandatory chars.
-	if ($mandatory) {
-		// Try to generate a password which fits all requirements as set by the user.
-		$trycount = 0;
-		do {
-			$password = makePassword($length, $allChars, $n);
-			$trycount++;
-		} while ($trycount < 100 && !hasMandatoryChars($password, $sets));
-		
-		// Fallback. If we didn't get a password which contains all mandatory strings, we add one char of each set manually.
-		if (!hasMandatoryChars($password, $sets)) {
-			$tmpPassword = '';
-			foreach ($sets as $set) {
-				$set = iconv('UTF-8', 'ISO-8859-1//IGNORE', $set);
-				$tmpPassword .= $set[mt_rand(0, strlen($set) -1)]; // Use strlen() instead of count() here, because it's a string and not an array.
-			}
-
-			// Cut off the length of the temporary password, which we want to add, so the resulting length of the password stays the same. 
-			$password = substr($password, 0, strlen($password) - strlen($tmpPassword)) . $tmpPassword;
+	// Generate a random password out of the defined chars.
+	$password = makePassword($length, $allChars, $n);
+	
+	// Check if chosen char sets are mandatory and generate a random, temporary password.
+	if ($mandatory && !hasMandatoryChars($password, $sets)) {
+		$tmpPassword = '';
+		foreach ($sets as $set) {
+			$set = iconv('UTF-8', 'ISO-8859-1//IGNORE', $set);
+			$tmpPassword .= $set[mt_rand(0, strlen($set) -1)]; // Use strlen() instead of count() here, because it's a string and not an array.
 		}
-	} else {
-		// Simply generate a password
-		$password = makePassword($length, $allChars, $n);
-	}
 		
+		// Cut off the length of the temporary password, which we want to add, of the real password so the resulting length stays the same.
+		$password = substr($password, 0, strlen($password) - strlen($tmpPassword)) . $tmpPassword;
+	}
 		
 	// Shuffle the generated password for additional randomness.
 	$password = str_shuffle($password);
@@ -370,6 +355,7 @@ function hasMandatoryChars($password, $sets, $tolerance = 0) {
 	}
 	
 	// Check if each char of each set is at least one time in password.
+	// This can probably also be done using regex. Performance?
 	foreach ($sets as $key => $value) {
 		$len = strlen($value);
 		for ($i = 0; $i < $len; $i++) {
@@ -411,7 +397,7 @@ function checkPasswordStrength($password, $allSetChars) {
 	$ret = 'weak';
 	$length = strlen($password);
 	
-	// Clear temporary array
+	// Clear and prepare temporary array
 	$tmp = array();
 	for ($i = 0; $i < count($allSetChars); $i++) {
 		$tmp[$i] = 0;

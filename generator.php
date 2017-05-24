@@ -83,13 +83,7 @@ $similar_lowercase = 'l';
 $similar_decimals = '10';
 $similar_symbols = '|';
 
-// This contains all character-groups. For readability indexes have been added, although they would be created automatically.
-$allSetChars = array(
-		0 => $lowercase . $similar_lowercase,
-		1 => $uppercase . $similar_uppercase,
-		2 => $decimals  . $similar_decimals,
-		3 => $symbols   . $similar_symbols
-);
+$chartypes = array('/[a-z]/', '/[A-Z]/', '/[0-9]/', '/[\W]/');
 
 $available_sets = strtolower($available_sets); // Check sets as lowercase.
 
@@ -130,16 +124,16 @@ if (strpos($available_sets, 's') !== false) {
 }
 
 
-// Add all characters from chosen sets
-$allChars = implode('', $sets);
-
 // Use custom chars and add them if they are not covered by the chosen/available sets
 if (!empty(($custom))) {
 	$tmpCustom = addCustomChars($custom, $sets);
 
 	if ($tmpCustom) {
-		$sets[] = $tmpCustom;			// Add custom chars only to chosen sets
-		$allSetChars[] = $tmpCustom;	// Add custom chars to all chars sets
+		$tmpCustom = explode('', $tmpCustom);
+		foreach ($tmpCustom as $tc) {
+			
+		}
+		//$sets[] = $tmpCustom;			// Add custom chars only to chosen sets
 	}
 }
 
@@ -153,20 +147,17 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	// Use posted string as password.
 	$password = $_POST['result'];
 	
-	// Remove all chars from posted string which are not in the globally defined sets.
-	//$password = cleanupString($password, $allSetChars); //= preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $password );
-
 	// Check strength of entered password
-	$strength = checkPasswordStrength($password, $allSetChars);
+	$strength = checkPasswordStrength($password, $chartypes);
 	
 	// Return a JSON formatted array which contains the password and its strength.
-	$json = json_encode(array('password' => $password, 'strength' => $strength));
+	$json = json_encode(array('password' => $password, 'strength' => $strength), JSON_UNESCAPED_UNICODE);
 } else {
 	if (!isset($_POST['checkstrength']) || empty($_POST['checkstrength'])) {
 		// Return the generated password and its strength as JSON
 		// Circumvent duplicate AJAX calls due to hammering the "Generate" button. 
 		do {
-			$ret= generateStrongPassword($length, $add_dashes, $sets, $allSetChars, $mandatory);
+			$ret = generateStrongPassword($length, $add_dashes, $sets, $chartypes, $mandatory);
 		} while (empty($ret));
 		
 		$json = json_encode($ret, JSON_UNESCAPED_UNICODE);
@@ -289,7 +280,7 @@ function addCustomChars($custom, $sets) {
  * @param boolean $mandatory - Flag to toggle chosen sets mandatory.
  * @return array
  */
-function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $allSetChars = '', $mandatory = false) {
+function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $chartypes = array(), $mandatory = false) {
 	// Shuffle the order of sets for additional randomness.
 	shuffle($sets);
 	
@@ -309,7 +300,7 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	$password = makePassword($length, $allChars, $n);
 	
 	// Check if chosen char sets are mandatory and generate a random, temporary password.
-	if ($mandatory && !hasMandatoryChars($password, $sets)) {
+	if ($mandatory && !hasMandatoryChars($password, $chartypes)) {
 		$tmpPassword = '';
 		foreach ($sets as $set) {
 			$set = iconv('UTF-8', 'ISO-8859-1//IGNORE', $set);
@@ -332,7 +323,7 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	$password = iconv('ISO-8859-1', 'UTF-8', $password);
 
 	// Check the password strength.
-	$strength = checkPasswordStrength($password, $allSetChars);
+	$strength = checkPasswordStrength($password, $chartypes);
 	
 	// Return array which contains the password and its strength.
 	return array('password' => $password, 'strength' => $strength);
@@ -343,37 +334,12 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
  * Checks if a given password contains at least one character of each set.
  * 
  * @param string $password
- * @param array $sets
- * @param array $ret
+ * @param integer $tolerance
  * @return boolean
  */
-function hasMandatoryChars($password, $sets, $tolerance = 0) {
-	// Clear our check-array.
-	$ret = array();
-	for ($i = 0; $i < count($sets); $i++) {
-		$ret[$i] = 0;
-	}
-	
-	// Check if each char of each set is at least one time in password.
-	// This can probably also be done using regex. Performance?
-	foreach ($sets as $key => $value) {
-		$len = strlen($value);
-		for ($i = 0; $i < $len; $i++) {
-			//$val = iconv('ISO-8859-1', 'UTF-8', $value[$i]);
-			$val = $value[$i];
-			if (strpos($password, $val) !== false) {
-				$ret[$key] = 1;
-			}
-		}
-	}
-	
-	// Check if all true in results array
-	$violations = 0;
-	foreach($ret as $r) {
-		if (empty($r)) {
-			$violations++;
-		}
-	}
+function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
+	$strength = numCharTypes($password, $chartypes);
+	$violations = abs($strength - count($chartypes));
 
 	// If more violations of defined rules than defined tolerance return false.
 	if ($violations > $tolerance) {
@@ -385,6 +351,28 @@ function hasMandatoryChars($password, $sets, $tolerance = 0) {
 
 
 /**
+ * Check how many char types a string has
+ * 
+ * @param string $s
+ * @return number
+ */
+function numCharTypes($s, $chartypes) {
+	$num = 0;
+	
+	// Check for all defined character types
+	if (is_array($chartypes) && count($chartypes) > 0) {
+		foreach ($chartypes as $chartype) {
+			if (preg_match_all($chartype, $s)) {
+				$num++;
+			}
+		}
+	}
+	
+	return $num;
+}// END: numCharTypes()
+
+
+/**
  * Checks strength of a given password against all defined sets.
  * Returns a string that describes the strength of the password, in order to use that as id by the associated JavaScript.
  * 
@@ -392,30 +380,19 @@ function hasMandatoryChars($password, $sets, $tolerance = 0) {
  * @param array $allSetChars
  * @return string
  */
-function checkPasswordStrength($password, $allSetChars) {
-	// Everything is considered a weak password unless it fit the definition below.
+function checkPasswordStrength($password, $chartypes) {
+	// Everything is considered a weak password unless it fits the definition below.
 	$ret = 'weak';
 	$length = strlen($password);
+	$strength = numCharTypes($password, $chartypes);
 	
-	// Clear and prepare temporary array
-	$tmp = array();
-	for ($i = 0; $i < count($allSetChars); $i++) {
-		$tmp[$i] = 0;
-	}
-	
-	// Check if password is at least 9 chars long and contains at least one char of each set. No tolerance here!
-	if ($length >= 9 && hasMandatoryChars($password, $allSetChars)) {
+	// Set return value according to length and calculated strength
+	if ($length >= 9 && $strength == count($chartypes)) {
 		$ret = 'good';
-	} else {
-		// Check if password is at least 6 chars long and contains at least one char of three of all sets. Tolerance is 1.
-		if ($length >= 6 && hasMandatoryChars($password, $allSetChars, 1)) {
-			$ret = 'fair';
-		} else {
-			// If there's no password, then there's no strength, too.
-			if ($length <= 0) {
-				$ret = '';
-			}
-		}
+	} else if ($length >= 6 && $strength == count($chartypes) - 1) {
+		$ret = 'fair';
+	} else if ($length < 1) {
+		$ret = '';
 	}
 	
 	return $ret;

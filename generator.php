@@ -129,11 +129,14 @@ if (!empty(($custom))) {
 	$tmpCustom = addCustomChars($custom, $sets);
 
 	if ($tmpCustom) {
-		$tmpCustom = explode('', $tmpCustom);
+		// Add custom chars only to chosen sets.
+		$sets[] = $tmpCustom;
+		
+		// Add each custom char as regex to our $chartypes array.
+		$tmpCustom = str_split($tmpCustom);
 		foreach ($tmpCustom as $tc) {
-			
+			$chartypes[]= '/[\'' . $tc . ']/';
 		}
-		//$sets[] = $tmpCustom;			// Add custom chars only to chosen sets
 	}
 }
 

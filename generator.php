@@ -83,7 +83,8 @@ $similar_lowercase = 'l';
 $similar_decimals = '10';
 $similar_symbols = '|';
 
-$chartypes = array('/[a-z]/', '/[A-Z]/', '/[0-9]/', '/[\W]/');
+$chartypes = array('/[a-z]/', '/[A-Z]/', '/[0-9]/', '/[\W]/');	// Holds the default characters. Won't contain custom chars.
+$chartypes_all = $chartypes;									// If custom chars are defined, those will be added to this array.
 
 $available_sets = strtolower($available_sets); // Check sets as lowercase.
 
@@ -134,8 +135,16 @@ if (!empty(($custom))) {
 		
 		// Add each custom char as regex to our $chartypes array.
 		$tmpCustom = str_split($tmpCustom);
+		$tmpChars = '/[';
+		
 		foreach ($tmpCustom as $tc) {
-			$chartypes[]= '/[\'' . $tc . ']/';
+			  $tmpChars .= '\\' . $tc;
+		}
+		
+		$tmpChars .= ']/';
+		
+		if ($tmpChars != '/[]/') {
+			$chartypes_all[] = $tmpChars;
 		}
 	}
 }
@@ -284,6 +293,8 @@ function addCustomChars($custom, $sets) {
  * @return array
  */
 function generateStrongPassword($length = 16, $add_dashes = false, $sets = array(), $chartypes = array(), $mandatory = false) {
+	global $chartypes_all; // Ugh! Globals in functions make me shiver.
+	
 	// Shuffle the order of sets for additional randomness.
 	shuffle($sets);
 	
@@ -303,7 +314,7 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	$password = makePassword($length, $allChars, $n);
 	
 	// Check if chosen char sets are mandatory and generate a random, temporary password.
-	if ($mandatory && !hasMandatoryChars($password, $chartypes)) {
+	if ($mandatory && !hasMandatoryChars($password, $chartypes_all)) {
 		$tmpPassword = '';
 		foreach ($sets as $set) {
 			$set = iconv('UTF-8', 'ISO-8859-1//IGNORE', $set);
@@ -390,9 +401,9 @@ function checkPasswordStrength($password, $chartypes) {
 	$strength = numCharTypes($password, $chartypes);
 	
 	// Set return value according to length and calculated strength
-	if ($length >= 9 && $strength == count($chartypes)) {
+	if ($length >= 12 && $strength >= count($chartypes)) {
 		$ret = 'good';
-	} else if ($length >= 6 && $strength == count($chartypes) - 1) {
+	} else if ($length >= 8 && $strength >= count($chartypes) - 1) {
 		$ret = 'fair';
 	} else if ($length < 1) {
 		$ret = '';

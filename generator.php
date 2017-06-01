@@ -157,9 +157,9 @@ $json = '';
 $password = '';
 $ret = '';
 
-if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($_POST['result']) && !empty($_POST['result'])) {
+if (isset($POST['checkstrength']) && !empty($POST['checkstrength']) && isset($POST['result']) && !empty($POST['result'])) {
 	// Use posted string as password.
-	$password = $_POST['result'];
+	$password = $POST['result'];
 	
 	// Check strength of entered password
 	$strength = checkPasswordStrength($password, $chartypes);
@@ -167,7 +167,7 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	// Return a JSON formatted array which contains the password and its strength.
 	$json = json_encode(array('password' => $password, 'strength' => $strength), JSON_UNESCAPED_UNICODE);
 } else {
-	if (!isset($_POST['checkstrength']) || empty($_POST['checkstrength'])) {
+	if (!isset($POST['checkstrength']) || empty($POST['checkstrength'])) {
 		// Return the generated password and its strength as JSON
 		// Circumvent duplicate AJAX calls due to hammering the "Generate" button. 
 		do {

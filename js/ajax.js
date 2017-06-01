@@ -8,8 +8,8 @@
 */
 
 function centerBox() {
-    $("#outer_box").position({
-        my: "center", at: "center", of: window
+    $('#outer_box').position({
+        my: 'center', at: 'center', of: window
     });
 }// END: centerBox();
 

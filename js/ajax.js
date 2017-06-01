@@ -6,44 +6,6 @@
 	@author nrekow
 	
 */
-$(function() {
-	// Handle clicks on the Generate button
-	$('#generate').click(function() {
-		// Disable the button to avoid hammering.
-		$('#generate').prop('disabled', true);
-		doAJAX();
-	});
-	
-	// Handle clicks on the "Check strength" button
-	$('#checkstrength').click(function() {
-		doAJAX('checkstrength');
-	});
-	
-	// Handle clicks on the "Reset" button.
-	// This button has the type "reset", which resets all form fields to their initial values, so we just need to clear the strength-meter.
-	$('#reset').click(function() {
-		$('.strength').hide();
-	});
-	
-	// Center the box if the browser window is resized.
-	$(window).resize(function () {
-		centerBox();
-	});
-
-	// Configure the box to be draggable inside the browser window, but don't allow to move it out of the viewport.
-	$('#outer_box').draggable({
-		containment: '#box',
-		handle: '#title',
-		cancel: '#inner_box'
-	});
-	
-	// Disable text-selection of title-bar, because this is used as drag-handle
-	$('#title').disableSelection();
-	
-	// Center box upon load
-	centerBox();
-});
-
 
 function centerBox() {
     $("#outer_box").position({
@@ -61,7 +23,7 @@ function doAJAX(s) {
 	}
 	
 	// Check value of #length input form field; fallback to 10 if empty or lower than 1.
-	if ($('#length').val() <= 0 || $('#length').val() == '') {
+	if ($('#length').val() <= 0 || $('#length').val() === '') {
 		$('#length').val(10);
 	}
 	
@@ -100,3 +62,42 @@ function doAJAX(s) {
 		}
 	});
 }//END: doAJAX()
+
+
+$(function() {
+	// Handle clicks on the Generate button
+	$('#generate').click(function() {
+		// Disable the button to avoid hammering.
+		$('#generate').prop('disabled', true);
+		doAJAX();
+	});
+	
+	// Handle clicks on the "Check strength" button
+	$('#checkstrength').click(function() {
+		doAJAX('checkstrength');
+	});
+	
+	// Handle clicks on the "Reset" button.
+	// This button has the type "reset", which resets all form fields to their initial values, so we just need to clear the strength-meter.
+	$('#reset').click(function() {
+		$('.strength').hide();
+	});
+	
+	// Center the box if the browser window is resized.
+	$(window).resize(function () {
+		centerBox();
+	});
+
+	// Configure the box to be draggable inside the browser window, but don't allow to move it out of the viewport.
+	$('#outer_box').draggable({
+		containment: '#box',
+		handle: '#title',
+		cancel: '#inner_box'
+	});
+	
+	// Disable text-selection of title-bar, because this is used as drag-handle
+	$('#title').disableSelection();
+	
+	// Center box upon load
+	centerBox();
+});

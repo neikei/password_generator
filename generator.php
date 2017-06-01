@@ -19,54 +19,56 @@ if (!isset($_POST['ajax']) || empty($_POST['ajax'])) {
 // This will hold the requested sets of characters.
 $available_sets = '';
 
+$POST = $_POST;
+
 // Lowercase
-if (isset($_POST['lowercase']) && !empty($_POST['lowercase'])) {
+if (isset($POST['lowercase']) && !empty($POST['lowercase'])) {
 	$available_sets .= 'l';
 }
 
 // Uppercase
-if (isset($_POST['uppercase']) && !empty($_POST['uppercase'])) {
+if (isset($POST['uppercase']) && !empty($POST['uppercase'])) {
 	$available_sets .= 'u';
 }
 
 // Numbers
-if (isset($_POST['numbers']) && !empty($_POST['numbers'])) {
+if (isset($POST['numbers']) && !empty($POST['numbers'])) {
 	$available_sets .= 'd';
 }
 
 // Symbols
-if (isset($_POST['symbols']) && !empty($_POST['symbols'])) {
+if (isset($POST['symbols']) && !empty($POST['symbols'])) {
 	$available_sets .= 's';
 }
 
 // Similar chars
-if (isset($_POST['similar']) && !empty($_POST['similar'])) {
+if (isset($POST['similar']) && !empty($POST['similar'])) {
 	$available_sets .= 'x';
 }
 
 // Length
-if (isset($_POST['length']) && !empty($_POST['length']) && is_numeric($_POST['length'])) {
-	$length = $_POST['length'];
+if (isset($POST['length']) && !empty($POST['length']) && is_numeric($POST['length'])) {
+	$length = $POST['length'];
 } else {
 	$length = 16;
 }
 
 // Add dashes option
-if (isset($_POST['dashes']) && !empty($_POST['dashes'])) {
+if (isset($POST['dashes']) && !empty($POST['dashes'])) {
 	$add_dashes = true;
 } else {
 	$add_dashes = false;
 }
 
 // Custom characters
-if (isset($_POST['custom']) && !empty($_POST['custom'])) {
-	$custom = $_POST['custom'];
+if (isset($POST['custom']) && !empty($POST['custom'])) {
+	$custom = $POST['custom'];
 } else {
 	$custom = '';
 }
 
 // Check if custom characters are mandatory
-if (isset($_POST['mandatory']) && !empty($_POST['mandatory'])) {
+if (isset($POST['mandatory']) && !empty($POST['mandatory'])) {
 	$mandatory = true;
 } else {
 	$mandatory = false;

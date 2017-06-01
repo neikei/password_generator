@@ -19,56 +19,54 @@ if (!isset($_POST['ajax']) || empty($_POST['ajax'])) {
 // This will hold the requested sets of characters.
 $available_sets = '';
 
-$POST = $_POST;
-
 // Lowercase
-if (isset($POST['lowercase']) && !empty($POST['lowercase'])) {
+if (isset($_POST['lowercase']) && !empty($_POST['lowercase'])) {
 	$available_sets .= 'l';
 }
 
 // Uppercase
-if (isset($POST['uppercase']) && !empty($POST['uppercase'])) {
+if (isset($_POST['uppercase']) && !empty($_POST['uppercase'])) {
 	$available_sets .= 'u';
 }
 
 // Numbers
-if (isset($POST['numbers']) && !empty($POST['numbers'])) {
+if (isset($_POST['numbers']) && !empty($_POST['numbers'])) {
 	$available_sets .= 'd';
 }
 
 // Symbols
-if (isset($POST['symbols']) && !empty($POST['symbols'])) {
+if (isset($_POST['symbols']) && !empty($_POST['symbols'])) {
 	$available_sets .= 's';
 }
 
 // Similar chars
-if (isset($POST['similar']) && !empty($POST['similar'])) {
+if (isset($_POST['similar']) && !empty($_POST['similar'])) {
 	$available_sets .= 'x';
 }
 
 // Length
-if (isset($POST['length']) && !empty($POST['length']) && is_numeric($POST['length'])) {
-	$length = $POST['length'];
+if (isset($_POST['length']) && !empty($_POST['length']) && is_numeric($_POST['length'])) {
+	$length = $_POST['length'];
 } else {
 	$length = 16;
 }
 
 // Add dashes option
-if (isset($POST['dashes']) && !empty($POST['dashes'])) {
+if (isset($_POST['dashes']) && !empty($_POST['dashes'])) {
 	$add_dashes = true;
 } else {
 	$add_dashes = false;
 }
 
 // Custom characters
-if (isset($POST['custom']) && !empty($POST['custom'])) {
-	$custom = $POST['custom'];
+if (isset($_POST['custom']) && !empty($_POST['custom'])) {
+	$custom = $_POST['custom'];
 } else {
 	$custom = '';
 }
 
 // Check if custom characters are mandatory
-if (isset($POST['mandatory']) && !empty($POST['mandatory'])) {
+if (isset($_POST['mandatory']) && !empty($_POST['mandatory'])) {
 	$mandatory = true;
 } else {
 	$mandatory = false;
@@ -157,9 +155,9 @@ $json = '';
 $password = '';
 $ret = '';
 
-if (isset($POST['checkstrength']) && !empty($POST['checkstrength']) && isset($POST['result']) && !empty($POST['result'])) {
+if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($_POST['result']) && !empty($_POST['result'])) {
 	// Use posted string as password.
-	$password = $POST['result'];
+	$password = $_POST['result'];
 	
 	// Check strength of entered password
 	$strength = checkPasswordStrength($password, $chartypes);
@@ -167,7 +165,7 @@ if (isset($POST['checkstrength']) && !empty($POST['checkstrength']) && isset($PO
 	// Return a JSON formatted array which contains the password and its strength.
 	$json = json_encode(array('password' => $password, 'strength' => $strength), JSON_UNESCAPED_UNICODE);
 } else {
-	if (!isset($POST['checkstrength']) || empty($POST['checkstrength'])) {
+	if (!isset($_POST['checkstrength']) || empty($_POST['checkstrength'])) {
 		// Return the generated password and its strength as JSON
 		// Circumvent duplicate AJAX calls due to hammering the "Generate" button. 
 		do {

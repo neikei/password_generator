@@ -16,7 +16,7 @@ function centerBox() {
 
 function doAJAX(s) {
 	// Check if a parameter has been specified and prepare for POST; fallback to an empty string.
-	if (typeof(s) == 'undefined') {
+	if (typeof(s) === 'undefined') {
 		s = '';
 	} else {
 		s = '&' + s + '=1';
@@ -50,7 +50,7 @@ function doAJAX(s) {
 			$('.strength').hide();
 
 			// ... check if our AJAX call also returned a strength ... 
-			if (typeof(result.strength) != 'undefined' && result.strength.length > 0) {
+			if (typeof(result.strength) !== 'undefined' && result.strength.length > 0) {
 				// ... and just show the one returned by the AJAX call.
 				$('#strength-' + result.strength).show();
 			}

@@ -27,12 +27,7 @@
 		<link type="text/css" rel="stylesheet" href="css/glyphicon.css"/>
 		
 		<!-- Load JQuery and JQuery UI from Google CDN. For additional security and independence put these on your own server. -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-		
-		<!-- This is ok here instead of putting it at the bottom of this file, because it does not execute prior loading has finished. -->
-		<script src="js/ajax.js"></script>
 		<title>Password Generator</title>
 	</head>
 	<body>
@@ -57,7 +52,7 @@
 							</ul>
 							<br/> 
 							<div id="left">
-								<label for="length">Length</label> <input type="text" id="length" name="length" list="length-select" value="10" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
+								<label for="length">Length</label> <input type="text" id="length" name="length" list="length-select" value="" maxlength="3" placeholder="10" onfocus="this.select();"/> <label for="length">characters</label>
 								<datalist id="length-select">
 									<option>6</option>
 									<option>8</option>
@@ -89,5 +84,8 @@
 				</div>
 			</div>
 		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script src="js/ajax.js"></script>
 	</body>
 </html>

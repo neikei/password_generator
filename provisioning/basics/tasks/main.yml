@@ -1,0 +1,34 @@
+##################################################
+### Install basic system packages
+- name: Install basic packages
+  apt: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - vim
+    - git
+    - curl
+    - wget
+    - zip
+    - unzip
+    - htop
+    - iotop
+    - debian-goodies
+    - apt-transport-https
+    - ca-certificates
+
+##################################################
+### Install and configute ufw firewall
+- name: Set up firewall
+  apt: 
+    name: ufw
+    state: present
+
+- name: Allow Port 22
+  ufw: 
+    rule: allow 
+    port: 22
+
+- name: Start the firewall
+  ufw: 
+    state: enabled

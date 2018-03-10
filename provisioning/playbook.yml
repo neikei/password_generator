@@ -1,0 +1,12 @@
+ - hosts: all
+   roles:
+    - { role: basics }
+    - { role: nginx }
+    - { role: php }
+   post_tasks:
+    - service: 
+        name: nginx
+        state: restarted
+    - service:
+        name: "php{{ php_version }}-fpm"
+        state: restarted

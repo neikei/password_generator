@@ -387,6 +387,45 @@ function numCharTypes($s, $chartypes) {
 
 
 /**
+ * Gets the entropy of a given password.
+ 
+ @param password
+ @return entropy
+ */
+ function getEntropy($password) {
+ 	$length = strlen($password);
+ 	$charsets = 0;
+ 	
+ 	// Check for special characters
+ 	preg_match_all('/[\'`^£$%&*()}{@#~?!:;><>,|=_+¬-]*/g', $password, $matches);
+ 	
+ 	// Increase charset-value
+ 	$charsets += strlen($matches) * 32;
+ 	
+ 	// Check for lower case characters
+ 	preg_match_all('/[a-z]*/g', $password, $matches);
+ 	
+ 	// Increase charset-value
+ 	$charsets += strlen($matches) * 26;
+ 	
+ 	// Check for upper case characters
+ 	preg_match_all('/[A-Z]*/g', $password, $matches);
+ 	
+ 	// Increase charset-value
+ 	$charsets += strlen($matches) * 26;
+ 	
+ 	// Check for numbers
+ 	preg_match_all('/[0-9]*/g', $password, $matches);
+ 	
+ 	// Increase charset-value
+ 	$charsets += strlen($matches) * 10;
+ 	
+ 	$entropy = log($charsets) / log(2) * $length;
+ 	
+ 	return $entropy;
+ }
+
+/**
  * Checks strength of a given password against all defined sets.
  * Returns a string that describes the strength of the password, in order to use that as id by the associated JavaScript.
  * 
@@ -398,12 +437,13 @@ function checkPasswordStrength($password, $chartypes) {
 	// Everything is considered a weak password unless it fits the definition below.
 	$ret = 'weak';
 	$length = strlen($password);
-	$strength = numCharTypes($password, $chartypes);
+	//$strength = numCharTypes($password, $chartypes);
+	$entropy = getEntropy($password);
 	
 	// Set return value according to length and calculated strength
-	if ($length >= 12 && $strength >= count($chartypes)) {
+	if ($entropy >= 40) {
 		$ret = 'good';
-	} else if ($length >= 8 && $strength >= count($chartypes) - 1) {
+	} else if ($entropy >= 25) {
 		$ret = 'fair';
 	} else if ($length < 1) {
 		$ret = '';

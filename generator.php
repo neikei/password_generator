@@ -5,8 +5,8 @@
  * 
  * Supports generating passwords of unlimited length and selectable complexity.
  * 
- * @author nrekow
- *
+ * @author nrekow (main)
+ * @author dabewi
  * 
  */
 
@@ -386,13 +386,7 @@ function numCharTypes($s, $chartypes) {
 }// END: numCharTypes()
 
 
-/**
- * Gets the entropy of a given password.
- 
- @param password
- @return entropy
- */
- function getEntropy($password) {
+function getEntropy($password) {
  	$length = strlen($password);
  	$charsets = 0;
  	

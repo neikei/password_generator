@@ -135,7 +135,7 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 	$password = $_POST['result'];
 	
 	// Check strength of entered password
-	$strength = checkPasswordStrength($password, $chartypes);
+	$strength = checkPasswordStrength($password);
 	
 	// Return a JSON formatted array which contains the password and its strength.
 	$json = json_encode(array('password' => $password, 'strength' => $strength), JSON_UNESCAPED_UNICODE);
@@ -298,7 +298,7 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	// Convert $password back to UTF-8, because json_encode() expects UTF-8. Also the strength check would fail otherwise. 
 	$password = iconv('ISO-8859-1', 'UTF-8', $password);
 	// Check the password strength.
-	$strength = checkPasswordStrength($password, $chartypes);
+	$strength = checkPasswordStrength($password);
 	
 	// Return array which contains the password and its strength.
 	return array('password' => $password, 'strength' => $strength);
@@ -367,7 +367,7 @@ function getEntropy($password) {
  * @param array $allSetChars
  * @return string
  */
-function checkPasswordStrength($password, $chartypes) {
+function checkPasswordStrength($password) {
 	// Everything is considered a weak password unless it fits the definition below.
 	$length = strlen($password);
 	$ret = 'weak';

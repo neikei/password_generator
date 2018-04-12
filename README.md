@@ -14,7 +14,7 @@ Simple PHP based password generator. Supports generating passwords of unlimited 
 
 ### Quickstart
 
-1. git clone https://github.com/acidstout/password_generator.git
+1. git clone https://github.com/dabewi/password_generator.git
 2. cd password_generator
 3. vagrant up --provider=virtualbox
 4. ... wait ...

@@ -320,34 +320,6 @@ function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
 	
 	return true;
 }// END: hasMandatoryChars()
-/**
- * Check how many char types a string has
- * 
- * @param string $s
- * @return number
- */
-function numCharTypes($s, $chartypes) {
-	$num = 0;
-	
-	// Check for all defined character types
-	if (is_array($chartypes) && count($chartypes) > 0) {
-		foreach ($chartypes as $chartype) {
-			if (preg_match_all($chartype, $s)) {
-				$num++;
-			}
-		}
-	}
-	
-	return $num;
-}// END: numCharTypes()
-
-function debug_to_console( $data ) {
-    $output = $data;
-    if ( is_array( $output ) )
-        $output = implode( ',', $output);
-
-    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
-}
 
 function getEntropy($password) {
  	$length = strlen($password);

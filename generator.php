@@ -326,7 +326,7 @@ function getEntropy($password) {
  	$charsets = 0;
  	
  	// Check for special characters
- 	preg_match_all('/[^a-zA-Z\d]+/', $password, $matches);
+ 	preg_match_all('/\W+/', $password, $matches);
 	$count = count($matches[0]);
  	
  	// Increase charset-value

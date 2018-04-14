@@ -1,77 +1,64 @@
-﻿<?php
+<?php
 /**
  * 
  * Password Generator
  * 
  * Supports generating passwords of unlimited length and selectable complexity.
  * 
- * @author nrekow
- *
+ * @author nrekow (main)
+ * @author dwindau (entropy)
  * 
  */
-
 // Die if request doesn't identify as AJAX request.
 if (!isset($_POST['ajax']) || empty($_POST['ajax'])) {
 	die('Missing parameter!');
 }
-
-
 // This will hold the requested sets of characters.
 $available_sets = '';
-
 // Lowercase
 if (isset($_POST['lowercase']) && !empty($_POST['lowercase'])) {
 	$available_sets .= 'l';
 }
-
 // Uppercase
 if (isset($_POST['uppercase']) && !empty($_POST['uppercase'])) {
 	$available_sets .= 'u';
 }
-
 // Numbers
 if (isset($_POST['numbers']) && !empty($_POST['numbers'])) {
 	$available_sets .= 'd';
 }
-
 // Symbols
 if (isset($_POST['symbols']) && !empty($_POST['symbols'])) {
 	$available_sets .= 's';
 }
-
 // Similar chars
 if (isset($_POST['similar']) && !empty($_POST['similar'])) {
 	$available_sets .= 'x';
 }
-
 // Length
 if (isset($_POST['length']) && !empty($_POST['length']) && is_numeric($_POST['length'])) {
 	$length = $_POST['length'];
 } else {
 	$length = 16;
 }
-
 // Add dashes option
 if (isset($_POST['dashes']) && !empty($_POST['dashes'])) {
 	$add_dashes = true;
 } else {
 	$add_dashes = false;
 }
-
 // Custom characters
 if (isset($_POST['custom']) && !empty($_POST['custom'])) {
 	$custom = $_POST['custom'];
 } else {
 	$custom = '';
 }
-
 // Check if custom characters are mandatory
 if (isset($_POST['mandatory']) && !empty($_POST['mandatory'])) {
 	$mandatory = true;
 } else {
 	$mandatory = false;
 }
-
 // Define the characters of our sets.
 $sets = array();
 $lowercase = 'abcdefghijkmnopqrstuvwxyz';
@@ -82,12 +69,9 @@ $similar_uppercase = 'IO';
 $similar_lowercase = 'l';
 $similar_decimals = '10';
 $similar_symbols = '|';
-
 $chartypes = array('/[a-z]/', '/[A-Z]/', '/[0-9]/', '/[\W]/');	// Holds the default characters. Won't contain custom chars.
 $chartypes_all = $chartypes;									// If custom chars are defined, those will be added to this array.
-
 $available_sets = strtolower($available_sets); // Check sets as lowercase.
-
 // Use lowercase characters
 if (strpos($available_sets, 'l') !== false) {
 	if (strpos($available_sets, 'x') !== false) {
@@ -96,7 +80,6 @@ if (strpos($available_sets, 'l') !== false) {
 		$sets[] = $lowercase;
 	}
 }
-
 // Use uppercase characters
 if (strpos($available_sets, 'u') !== false) {
 	if (strpos($available_sets, 'x') !== false) {
@@ -105,7 +88,6 @@ if (strpos($available_sets, 'u') !== false) {
 		$sets[] = $uppercase;
 	}
 }
-
 // Use decimals
 if (strpos($available_sets, 'd') !== false) {
 	if (strpos($available_sets, 'x') !== false) {
@@ -114,7 +96,6 @@ if (strpos($available_sets, 'd') !== false) {
 		$sets[] = $decimals;
 	}
 }
-
 // Use symbols
 if (strpos($available_sets, 's') !== false) {
 	if (strpos($available_sets, 'x') !== false) {
@@ -123,12 +104,9 @@ if (strpos($available_sets, 's') !== false) {
 		$sets[] = $symbols;
 	}
 }
-
-
 // Use custom chars and add them if they are not covered by the chosen/available sets
 if (!empty(($custom))) {
 	$tmpCustom = addCustomChars($custom, $sets);
-
 	if ($tmpCustom) {
 		// Add custom chars only to chosen sets.
 		$sets[] = $tmpCustom;
@@ -148,19 +126,16 @@ if (!empty(($custom))) {
 		}
 	}
 }
-
-
 // Check which action to perform and prepare JSON.
 $json = '';
 $password = '';
 $ret = '';
-
 if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($_POST['result']) && !empty($_POST['result'])) {
 	// Use posted string as password.
 	$password = $_POST['result'];
 	
 	// Check strength of entered password
-	$strength = checkPasswordStrength($password, $chartypes);
+	$strength = checkPasswordStrength($password);
 	
 	// Return a JSON formatted array which contains the password and its strength.
 	$json = json_encode(array('password' => $password, 'strength' => $strength), JSON_UNESCAPED_UNICODE);
@@ -175,21 +150,15 @@ if (isset($_POST['checkstrength']) && !empty($_POST['checkstrength']) && isset($
 		$json = json_encode($ret, JSON_UNESCAPED_UNICODE);
 	}
 }
-
 // Add JSON header just in case JQuery messes things up if it's missing. Normally not required if dataType is set to 'json' in AJAX call.
 header('Content-Type: application/json; charset=UTF-8');
 // Return JSON
 echo $json;
 // Always die after an AJAX call.
 die();
-
-
-
 function cleanupString($s, $allSetChars) {
 	return preg_replace( '/[^' . preg_quote( implode('', $allSetChars), '/' ) . ']/', '', $s );
 }// END: cleanupString()
-
-
 /**
  * Generate a password with a defined length out of sets of chars.
  *
@@ -222,8 +191,6 @@ function makePassword($length, $allChars, $n) {
 	
 	return $tmpPassword;
 }// END: makePassword()
-
-
 /**
  * Split-up a string by inserting dashes.
  *
@@ -245,8 +212,6 @@ function addDashes($password, $length) {
 	
 	return $password;
 }// END: addDashes()
-
-
 /**
  * Checks for custom chars and adds them to the chosen set.
  *
@@ -278,8 +243,6 @@ function addCustomChars($custom, $sets) {
 	// ... otherwise simply return our temporary string.
 	return $tmpCustom;
 }// END: addCustomChars()
-
-
 /**
  * Generates a strong random password.
  * 
@@ -332,18 +295,14 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 	if ($add_dashes) {
 		$password = addDashes($password, $length);
 	}
-
 	// Convert $password back to UTF-8, because json_encode() expects UTF-8. Also the strength check would fail otherwise. 
 	$password = iconv('ISO-8859-1', 'UTF-8', $password);
-
 	// Check the password strength.
-	$strength = checkPasswordStrength($password, $chartypes);
+	$strength = checkPasswordStrength($password);
 	
 	// Return array which contains the password and its strength.
 	return array('password' => $password, 'strength' => $strength);
 }// END: generateStrongPassword()
-
-
 /**
  * Checks if a given password contains at least one character of each set.
  * 
@@ -354,7 +313,6 @@ function generateStrongPassword($length = 16, $add_dashes = false, $sets = array
 function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
 	$strength = numCharTypes($password, $chartypes);
 	$violations = abs($strength - count($chartypes));
-
 	// If more violations of defined rules than defined tolerance return false.
 	if ($violations > $tolerance) {
 		return false;
@@ -363,28 +321,43 @@ function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
 	return true;
 }// END: hasMandatoryChars()
 
-
-/**
- * Check how many char types a string has
- * 
- * @param string $s
- * @return number
- */
-function numCharTypes($s, $chartypes) {
-	$num = 0;
+function getEntropy($password) {
+ 	$length = strlen($password);
+ 	$charsets = 0;
+ 	
+ 	// Check for special characters
+ 	preg_match_all('/\W+/', $password, $matches);
+	$count = count($matches[0]);
+ 	
+ 	// Increase charset-value
+ 	$charsets += $count * 32;
 	
-	// Check for all defined character types
-	if (is_array($chartypes) && count($chartypes) > 0) {
-		foreach ($chartypes as $chartype) {
-			if (preg_match_all($chartype, $s)) {
-				$num++;
-			}
-		}
-	}
-	
-	return $num;
-}// END: numCharTypes()
+ 	// Check for lower case characters
+ 	preg_match_all('/[a-z]+/', $password, $matches);
+	$count = count($matches[0]);
 
+ 	// Increase charset-value
+ 	$charsets += $count * 26;
+ 	
+ 	// Check for upper case characters
+ 	preg_match_all('/[A-Z]+/', $password, $matches);
+	$count = count($matches[0]);
+ 	
+ 	// Increase charset-value
+ 	$charsets += $count * 26;
+ 	
+ 	// Check for numbers
+ 	preg_match_all('/[0-9]+/', $password, $matches);
+	$count = count($matches[0]);
+ 	
+ 	// Increase charset-value
+ 	$charsets += $count * 10;
+ 	
+	// Calculate the entropy
+ 	$entropy = log($charsets) / log(2) * $length;
+ 	
+ 	return $entropy;
+ }
 
 /**
  * Checks strength of a given password against all defined sets.
@@ -394,16 +367,16 @@ function numCharTypes($s, $chartypes) {
  * @param array $allSetChars
  * @return string
  */
-function checkPasswordStrength($password, $chartypes) {
+function checkPasswordStrength($password) {
 	// Everything is considered a weak password unless it fits the definition below.
-	$ret = 'weak';
 	$length = strlen($password);
-	$strength = numCharTypes($password, $chartypes);
+	$ret = 'weak';
+	$entropy = getEntropy($password);
 	
-	// Set return value according to length and calculated strength
-	if ($length >= 12 && $strength >= count($chartypes)) {
+	// Set return value according to character entropy
+	if ($entropy >= 100) {
 		$ret = 'good';
-	} else if ($length >= 8 && $strength >= count($chartypes) - 1) {
+	} else if ($entropy >= 60) {
 		$ret = 'fair';
 	} else if ($length < 1) {
 		$ret = '';

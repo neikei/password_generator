@@ -324,37 +324,16 @@ function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
 function getEntropy($password) {
  	$length = strlen($password);
  	$charsets = 0;
+ 	$regex = array('/\W+/', '/[a-z]+/', '/[A-Z]+/', '/[0-9]+/');
+ 	$values = array(32, 26, 26, 10);
  	
- 	// Check for special characters
- 	preg_match_all('/\W+/', $password, $matches);
-	$count = count($matches[0]);
- 	
- 	// Increase charset-value
- 	$charsets += $count * 32;
+ 	for ($i = 0; $i <= 3; $i++) {
+ 		preg_match_all($regex[$i], $password, $matches);
+ 		$count = count($matches[0]);
+ 		$charsets += $count * $values[$i];
+ 	}  	
 	
- 	// Check for lower case characters
- 	preg_match_all('/[a-z]+/', $password, $matches);
-	$count = count($matches[0]);
-
- 	// Increase charset-value
- 	$charsets += $count * 26;
- 	
- 	// Check for upper case characters
- 	preg_match_all('/[A-Z]+/', $password, $matches);
-	$count = count($matches[0]);
- 	
- 	// Increase charset-value
- 	$charsets += $count * 26;
- 	
- 	// Check for numbers
- 	preg_match_all('/[0-9]+/', $password, $matches);
-	$count = count($matches[0]);
- 	
- 	// Increase charset-value
- 	$charsets += $count * 10;
- 	
-	// Calculate the entropy
- 	$entropy = log($charsets) / log(2) * $length;
+ 	$entropy = log($charsets) / log(2) * $length; 
  	
  	return $entropy;
  }

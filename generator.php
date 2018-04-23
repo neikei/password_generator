@@ -324,15 +324,23 @@ function hasMandatoryChars($password, $chartypes, $tolerance = 0) {
 function getEntropy($password) {
  	$length = strlen($password);
  	$charsets = 0;
+ 	
+ 	// Save the four regular expressions in one array
  	$regex = array('/\W+/', '/[a-z]+/', '/[A-Z]+/', '/[0-9]+/');
+ 	
+ 	// Save the weights of the char sets in another array
  	$values = array(32, 26, 26, 10);
  	
+ 	// Iterate over the password string, compare it with the regex entries
+ 	// and calculate the entropy based on the amount of characters from the 
+ 	// different character sets
  	for ($i = 0; $i <= 3; $i++) {
  		preg_match_all($regex[$i], $password, $matches);
  		$count = count($matches[0]);
  		$charsets += $count * $values[$i];
  	}  	
 	
+	// Calculate the entropy
  	$entropy = log($charsets) / log(2) * $length; 
  	
  	return $entropy;

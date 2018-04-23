@@ -325,36 +325,23 @@ function getEntropy($password) {
  	$length = strlen($password);
  	$charsets = 0;
  	
- 	// Check for special characters
- 	preg_match_all('/\W+/', $password, $matches);
-	$count = count($matches[0]);
+ 	// Save the four regular expressions in one array
+ 	$regex = array('/\W+/', '/[a-z]+/', '/[A-Z]+/', '/[0-9]+/');
  	
- 	// Increase charset-value
- 	$charsets += $count * 32;
+ 	// Save the weights of the char sets in another array
+ 	$values = array(32, 26, 26, 10);
+ 	
+ 	// Iterate over the password string, compare it with the regex entries
+ 	// and calculate the entropy based on the amount of characters from the 
+ 	// different character sets
+ 	for ($i = 0; $i <= 3; $i++) {
+ 		preg_match_all($regex[$i], $password, $matches);
+ 		$count = count($matches[0]);
+ 		$charsets += $count * $values[$i];
+ 	}  	
 	
- 	// Check for lower case characters
- 	preg_match_all('/[a-z]+/', $password, $matches);
-	$count = count($matches[0]);
-
- 	// Increase charset-value
- 	$charsets += $count * 26;
- 	
- 	// Check for upper case characters
- 	preg_match_all('/[A-Z]+/', $password, $matches);
-	$count = count($matches[0]);
- 	
- 	// Increase charset-value
- 	$charsets += $count * 26;
- 	
- 	// Check for numbers
- 	preg_match_all('/[0-9]+/', $password, $matches);
-	$count = count($matches[0]);
- 	
- 	// Increase charset-value
- 	$charsets += $count * 10;
- 	
 	// Calculate the entropy
- 	$entropy = log($charsets) / log(2) * $length;
+ 	$entropy = log($charsets) / log(2) * $length; 
  	
  	return $entropy;
  }
